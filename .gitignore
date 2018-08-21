@@ -4,3 +4,5 @@
 *.user
 bin/
 tmp/
+.qmake.stash
+Makefile

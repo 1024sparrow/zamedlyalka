@@ -11,4 +11,8 @@ RCC_DIR +=  tmp/rcc
 OBJECTS_DIR += tmp/obj
 
 SOURCES += \
-    main.cpp
+    main.cpp \
+    mainwindow.cpp
+
+HEADERS += \
+    mainwindow.h
