@@ -1,0 +1,6 @@
+*.swp
+*.swo
+*~
+*.user
+bin/
+tmp/
