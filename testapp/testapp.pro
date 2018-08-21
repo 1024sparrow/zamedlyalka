@@ -12,7 +12,9 @@ OBJECTS_DIR += tmp/obj
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    test1.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    test1.h
