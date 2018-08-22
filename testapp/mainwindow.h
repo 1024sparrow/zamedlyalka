@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QProcess>
 class QStackedWidget;
+class QKeyEvent;
 
 class MainWindow : public QWidget
 {
@@ -21,6 +22,8 @@ private slots:
     void readyReadStandardOutput();
     void started();
     void stateChanged(QProcess::ProcessState newState);
+private:
+    void keyPressEvent(QKeyEvent *event);
 
 
 private:
