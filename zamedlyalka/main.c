@@ -5,6 +5,7 @@
 #include <unistd.h> // pipe(), fork()
 
 #define ERR(T) {fprintf(stderr, T);return 1;}
+#define COMMAND_BUF_SIZE 1024
 
 int main()
 {
@@ -15,18 +16,18 @@ int main()
     if (pipe(fdPipe) < 0)
         ERR("не смог открыть канал (внутрення ошибка)")
 
-    pid_t child = fork();
-    if (child < 0)
+    pid_t pidChild = fork();
+    if (pidChild < 0)
         ERR("не смог породить дочерний процесс (внутренняя ошибка)")
-    else if (child == 0) // дочерний процесс
+    else if (pidChild == 0) // дочерний процесс
     {
     }
     else // родительский процесс
     {
     }
 
-    char command[1024];
-    while (strcmp(fgets(command, 1024, stdin), "quit\n") != 0)
+    char command[COMMAND_BUF_SIZE];
+    while (strcmp(fgets(command, COMMAND_BUF_SIZE, stdin), "quit\n") != 0)
     {
         printf("command: %s", command);
         if (*command == 'q')
