@@ -10,6 +10,14 @@ int main()
     while (strcmp(fgets(command, 1024, stdin), "quit\n") != 0)
     {
         printf("command: %s", command);
+        if (*command == 'q')
+        {
+            printf("Q!!\n");
+        }
+        else if (*command == 'w')
+        {
+            printf("W!!\n");
+        }
     }
     return 0;
 
