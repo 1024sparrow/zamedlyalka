@@ -8,9 +8,18 @@
 #define ERR(T) {fprintf(stderr, T);return 1;}
 #define COMMAND_BUF_SIZE 1024
 
-void sigintHandler(int p)
+static int received = 0;
+//https://habr.com/post/141206/
+//https://stackoverflow.com/questions/36234703/send-signal-from-parent-process-to-child-in-c
+// в функциях-обработчиках сигналов не работает printf()
+
+void sigintHandler(int signum)
 {
-    printf("sigint catched");
+    if (signum == SIGUSR1)
+    {
+        received = 1;
+    }
+    //printf("sigint catched. pid: %i", getpid());
 }
 
 int main()
@@ -22,18 +31,6 @@ int main()
     if (pipe(fdPipe) < 0)
         ERR("не смог открыть канал (внутрення ошибка)")
 
-    //https://habr.com/post/141206/
-    //{{
-    struct sigaction act;
-    memset(&act, 0, sizeof(act));
-    act.sa_handler = sigintHandler;
-    sigset_t   set;
-    sigemptyset(&set);
-    sigaddset(&set, SIGUSR1);
-    sigaddset(&set, SIGUSR2);
-    act.sa_mask = set;
-    sigaction(SIGUSR1, &act, 0);
-    //}}
 
     pid_t pidChild = fork();
     if (pidChild < 0)
@@ -41,17 +38,12 @@ int main()
     else if (pidChild == 0) // дочерний процесс
     {
         printf("начат дочерний процесс\n");
-        //if (signal(SIGUSR1, sigintHandler) < 0)
-        //    ERR("Не смог привязать обработчик к сигналу");
-        //struct sigaction act;
-        //memset(&act, 0, sizeof(act));
-        //act.sa_handler = sigintHandler;
-        //sigset_t   set;
-        //sigemptyset(&set);
-        //sigaddset(&set, SIGUSR1);
-        //sigaddset(&set, SIGUSR2);
-        //act.sa_mask = set;
-        //sigaction(SIGUSR1, &act, 0);
+        if (signal(SIGUSR1, sigintHandler) < 0)
+            ERR("Не смог привязать обработчик к сигналу");
+        printf("Process2, pid=%d\n",getpid());
+        while (!received)
+            ;
+        printf("SIGUSR1 received.\n");
     }
     else // родительский процесс
     {
@@ -62,7 +54,7 @@ int main()
             if (*command == 'q')
             {
                 printf("Q!!\n");
-                raise(SIGUSR1);//
+                //raise(SIGUSR1);//
                 if (kill(pidChild, SIGUSR1) < 0)
                     ERR("не смог сэмитировать сигнал\n")
                 printf("послан сигнал\n");
