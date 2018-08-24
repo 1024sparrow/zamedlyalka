@@ -13,14 +13,9 @@ static int received = 0;
 //https://stackoverflow.com/questions/36234703/send-signal-from-parent-process-to-child-in-c
 // в функциях-обработчиках сигналов не работает printf()
 
-void sigintHandler(int signum)
-{
-    if (signum == SIGUSR1)
-    {
-        received = 1;
-    }
-    signal(signum, sigintHandler);
-}
+{%% main__sigcallbacks.c %%}
+
+const char *help = {%% help %%};
 
 int main()
 {

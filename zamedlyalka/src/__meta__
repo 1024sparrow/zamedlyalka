@@ -4,7 +4,13 @@
             "target": "main.c",
             "source":{
                 "template": "main.c",
-                "list":[]
+                "list":[
+                    "main__sigcallbacks.c",
+                    "help"
+                ],
+                "types":{
+                    "help": ["text"]
+                }
             }
         }
     ],
