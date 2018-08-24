@@ -19,7 +19,7 @@ void sigintHandler(int signum)
     {
         received = 1;
     }
-    //printf("sigint catched. pid: %i", getpid());
+    signal(signum, sigintHandler);
 }
 
 int main()
