@@ -1,0 +1,12 @@
+{
+    "files":[
+        {
+            "target": "main.c",
+            "source":{
+                "template": "main.c",
+                "list":[]
+            }
+        }
+    ],
+    "dir_proc":[]
+}

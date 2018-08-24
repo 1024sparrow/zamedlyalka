@@ -6,3 +6,4 @@ bin/
 tmp/
 .qmake.stash
 testapp/Makefile
+compiled/
