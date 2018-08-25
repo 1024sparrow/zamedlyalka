@@ -6,6 +6,7 @@
                 "template": "main.c",
                 "list":[
                     "main__sigcallbacks.c",
+                    "main__process_command.c",
                     "help"
                 ],
                 "types":{
