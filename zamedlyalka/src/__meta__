@@ -5,7 +5,8 @@
             "source":{
                 "template": "main.c",
                 "list":[
-                    "main__sigcallbacks.c",
+                    "main__child_proc_signal_callback.c",
+                    "main__parent_proc_signal_callback.c",
                     "main__process_command.c",
                     "help"
                 ],

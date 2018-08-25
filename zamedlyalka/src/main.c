@@ -8,17 +8,24 @@
 #define ERR(T) {fprintf(stderr, T);return 1;}
 #define COMMAND_BUF_SIZE 1024
 
+/*
+SIGUSR1 - от родительского к дочернему
+*/
+
 static int received = 0;
 static int fdPipe[2];
 static char commandBuf[COMMAND_BUF_SIZE];
-static char commandDebug[1024];
+static int fdPipeDebug[2];// канал для отсылки отладочных сообщений из дочернего процесса (из callback-ов, в частности)
+static char pipeDebug[1024];
 //https://habr.com/post/141206/
 //https://stackoverflow.com/questions/36234703/send-signal-from-parent-process-to-child-in-c
 // в функциях-обработчиках сигналов не работает printf()
 
 {%% main__process_command.c %%}
 
-{%% main__sigcallbacks.c %%}
+{%% main__child_proc_signal_callback.c %%}
+
+{%% main__parent_proc_signal_callback.c %%}
 
 const char *help = {%% help %%};
 
@@ -29,6 +36,8 @@ int main()
     
     if (pipe(fdPipe) < 0)
         ERR("не смог открыть канал (внутрення ошибка)")
+    if (pipe(fdPipeDebug) < 0)
+        ERR("не смог открыть отладочный канал (внутренняя ошибка)")
 
 
     pid_t pidChild = fork();
@@ -37,7 +46,7 @@ int main()
     else if (pidChild == 0) // дочерний процесс
     {
         printf("начат дочерний процесс\n");
-        if (signal(SIGUSR1, sigintHandler) < 0)
+        if (signal(SIGUSR1, childProcSignalCallback) < 0)
             ERR("Не смог привязать обработчик к сигналу");
         //
         //printf("Process2, pid=%d\n",getpid());

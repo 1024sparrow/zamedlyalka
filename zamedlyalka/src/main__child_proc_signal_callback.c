@@ -1,4 +1,4 @@
-void sigintHandler(int signum)
+void childProcSignalCallback(int signum)
 {
     if (signum == SIGUSR1)
     {
@@ -6,5 +6,5 @@ void sigintHandler(int signum)
         read(fdPipe[0], commandBuf, COMMAND_BUF_SIZE);
         processCommand(commandBuf);
     }
-    signal(signum, sigintHandler);
+    signal(signum, childProcSignalCallback);
 }
