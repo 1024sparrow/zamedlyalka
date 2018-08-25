@@ -56,6 +56,8 @@ int main()
     }
     else // родительский процесс
     {
+        //if (signal(SIGUSR1, childProcSignalCallback) < 0) <-- boris here
+        //    ERR("Не смог привязать обработчик к сигналу");
         char command[COMMAND_BUF_SIZE];
         while (strcmp(fgets(command, COMMAND_BUF_SIZE, stdin), "quit\n") != 0)
         {
