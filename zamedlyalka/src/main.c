@@ -1,9 +1,12 @@
+//  sudo apt install libasound2-dev
+
 #include <stdio.h> // printf()
 #include <string.h> // strcmp()
 //#include <stdlib.h> // system()
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h> // pipe(), fork()
+#include "../src/sound.h"
 
 #define ERR(T) {fprintf(stderr, T);return 1;}
 #define COMMAND_BUF_SIZE 1024
@@ -53,6 +56,7 @@ int main()
         printf("начат дочерний процесс\n");
         if (signal(SIGUSR1, childProcSignalCallback) < 0)
             ERR("Не смог привязать обработчик к сигналу");
+
         //
         //printf("Process2, pid=%d\n",getpid());
         //while (!received)
