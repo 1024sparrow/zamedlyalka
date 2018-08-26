@@ -7,11 +7,14 @@
 
 #define ERR(T) {fprintf(stderr, T);return 1;}
 #define COMMAND_BUF_SIZE 1024
+#define PIPEDEBUG_BUF_SIZE 1024
+#define debug(T) {printf(T);}
 
 /*
 SIGUSR1 - от родительского к дочернему
 */
 
+static pid_t pidParent;
 static int received = 0;
 static int fdPipe[2];
 static char commandBuf[COMMAND_BUF_SIZE];
@@ -39,8 +42,10 @@ int main()
     if (pipe(fdPipeDebug) < 0)
         ERR("не смог открыть отладочный канал (внутренняя ошибка)")
 
-
+    pidParent = getpid();
+    printf("pidParent: %i\n", pidParent);
     pid_t pidChild = fork();
+    printf("pidChild: %i\n", pidChild);
     if (pidChild < 0)
         ERR("не смог породить дочерний процесс (внутренняя ошибка)")
     else if (pidChild == 0) // дочерний процесс
@@ -56,7 +61,7 @@ int main()
     }
     else // родительский процесс
     {
-        //if (signal(SIGUSR1, childProcSignalCallback) < 0) <-- boris here
+        //if (signal(SIGUSR1, parentProcSignalCallback) < 0)
         //    ERR("Не смог привязать обработчик к сигналу");
         char command[COMMAND_BUF_SIZE];
         while (strcmp(fgets(command, COMMAND_BUF_SIZE, stdin), "quit\n") != 0)
