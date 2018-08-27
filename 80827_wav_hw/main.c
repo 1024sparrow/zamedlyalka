@@ -29,10 +29,11 @@ main(int argc, char **argv)
         static struct option long_options[] = {
             {"shift",     no_argument, 0,  's' },
             {"help",     no_argument, 0,  'h' },
+            {"silent-mode",     no_argument, 0,  'S' },
             {0,         0,                 0,  0 }
         };
 
-        c = getopt_long(argc, argv, "sh", long_options, &option_index);
+        c = getopt_long(argc, argv, "Ssh", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -46,6 +47,9 @@ main(int argc, char **argv)
             break;
         case 's':
             p_shift = 1;
+            break;
+        case 'S':
+            // врубаем режим "тишины" - в консоль пишем только когда произошёл запрос на определение текущего момента времени на звуковой дорожке.
             break;
         case 'h':
             help();
