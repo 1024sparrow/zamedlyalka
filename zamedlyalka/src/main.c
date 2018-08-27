@@ -56,6 +56,7 @@ int main()
         printf("начат дочерний процесс\n");
         if (signal(SIGUSR1, childProcSignalCallback) < 0)
             ERR("Не смог привязать обработчик к сигналу");
+        sound_start();
 
         //
         //printf("Process2, pid=%d\n",getpid());
