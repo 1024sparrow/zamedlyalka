@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h> // pipe(), fork()
+#include "../src/wav.h"
 #include "../src/sound.h"
 
 #define ERR(T) {fprintf(stderr, T);return 1;}
@@ -46,7 +47,8 @@ help()
     printf("{%% help %%}\n");
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
     int p_shift = 0;
     *filepath_in = 0;
@@ -104,6 +106,8 @@ int main(int argc, char **argv)
     printf("Начинаю предобработку со следующими парметрами:\n");
     printf("  Входной файл: %s\n", filepath_in);
     printf("  Режим работы со смещениями каналов: %s\n", p_shift ? "Активирован" : "Не активирован");
+
+    readWav(filepath_in);
     //system("stty raw");//seting the terminal in raw mode
     
     if (pipe(fdPipe) < 0)
@@ -122,6 +126,7 @@ int main(int argc, char **argv)
         printf("начат дочерний процесс\n");
         if (signal(SIGUSR1, childProcSignalCallback) < 0)
             ERR("Не смог привязать обработчик к сигналу");
+        return 0;//
         sound_start();
 
         //
@@ -135,6 +140,7 @@ int main(int argc, char **argv)
         //if (signal(SIGUSR1, parentProcSignalCallback) < 0)
         //    ERR("Не смог привязать обработчик к сигналу");
         char command[COMMAND_BUF_SIZE];
+        printf(">> ");
         while (strcmp(fgets(command, COMMAND_BUF_SIZE, stdin), "quit\n") != 0)
         {
             size_t l = strlen(command);
@@ -142,6 +148,7 @@ int main(int argc, char **argv)
                 ERR("не смог записать в канал (внутренняя ошибка)")
             if (kill(pidChild, SIGUSR1) < 0)
                 ERR("не смог сэмитировать сигнал\n")
+            printf(">> ");
 
             //printf("command: %s", command);
             //if (*command == 'q')
