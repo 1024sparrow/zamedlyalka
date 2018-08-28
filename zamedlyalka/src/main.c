@@ -143,6 +143,11 @@ main(int argc, char **argv)
         printf(">> ");
         while (strcmp(fgets(command, COMMAND_BUF_SIZE, stdin), "quit\n") != 0)
         {
+            if (strcmp(command, "help\n") == 0){
+                help();
+                printf(">> ");
+                continue;
+            }
             size_t l = strlen(command);
             if (write(fdPipe[1], command, l) < 0 )
                 ERR("не смог записать в канал (внутренняя ошибка)")
