@@ -123,7 +123,7 @@ main(int argc, char **argv)
         ERR("не смог породить дочерний процесс (внутренняя ошибка)")
     else if (pidChild == 0) // дочерний процесс
     {
-        printf("начат дочерний процесс\n");
+        //printf("начат дочерний процесс\n");
         if (signal(SIGUSR1, childProcSignalCallback) < 0)
             ERR("Не смог привязать обработчик к сигналу");
         return 0;//
