@@ -9,8 +9,9 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h> // pipe(), fork()
-#include "../src/wav.h"
-#include "../src/sound.h"
+#include "../src/wav.h" // read and write WAV
+#include "../src/dsp.h" // signal processing
+#include "../src/sound.h" // ALSA interaction
 
 #define ERR(T) {fprintf(stderr, T);return 1;}
 #define COMMAND_BUF_SIZE 1024
@@ -107,7 +108,9 @@ main(int argc, char **argv)
     printf("  Входной файл: %s\n", filepath_in);
     printf("  Режим работы со смещениями каналов: %s\n", p_shift ? "Активирован" : "Не активирован");
 
-    if (readWav(filepath_in, p_shift))
+    if (readWav(filepath_in, p_shift)) // boris here
+        return 1;
+    if (process_signal())
         return 1;
     //system("stty raw");//seting the terminal in raw mode
     

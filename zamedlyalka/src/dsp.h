@@ -13,4 +13,6 @@ struct DSP_DATA {
     struct DSP_RESONATOR_DATA *resonators;
 };
 
+int process_signal();
+
 #endif // DSP_H
