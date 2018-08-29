@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> // strcpy
+#include <string.h> // strcpy, malloc
+
+#include "dsp.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -86,8 +88,10 @@
 	    unsigned char data_chunk_header [4];        // DATA string or FLLR string
 	    unsigned int data_size;                     // NumSamples * NumChannels * BitsPerSample/8 - size of the next chunk that will be read
 	};
+static struct HEADER header;
+static struct DSP_DATA dsp_data;
 
-int readWav(const char *p_filepath)
+int readWav(const char *p_filepath)//, int channelCount *po_channelCount, int sampleCopunt)
 {
     printf("reading Wav...\n");
     FILE *file = fopen(p_filepath, "r");
@@ -99,7 +103,7 @@ int readWav(const char *p_filepath)
     int read = 0;
 	  
     // http://truelogic.org/wordpress/2015/09/04/parsing-a-wav-file-in-c/
-    struct HEADER header;
+    //struct HEADER header;
     unsigned char buffer4[4];
 	unsigned char buffer2[2];
 	char* seconds_to_time(float seconds);
@@ -184,10 +188,16 @@ int readWav(const char *p_filepath)
     printf("Approx.Duration in h:m:s=%s\n", seconds_to_time(duration_in_seconds));
     // read each sample from data chunk if PCM
     if (header.format_type == 1) { // PCM
-        printf("Dump sample data? Y/N?");
-        char c = 'n';
-        scanf("%c", &c);
-        if (c == 'Y' || c == 'y') {
+        dsp_data.channels = header.channels;
+        dsp_data.count = num_samples;
+        dsp_data.data_0 = malloc(num_samples * header.channels * sizeof(double));
+
+
+        //printf("Dump sample data? Y/N?");
+        //char c = 'n';
+        //scanf("%c", &c);
+        //if (c == 'Y' || c == 'y') {
+        if (1) {
             long i =0;
             char data_buffer[size_of_each_sample];
             int  size_is_correct = TRUE;
@@ -214,17 +224,19 @@ int readWav(const char *p_filepath)
                         low_limit = -2147483648;
                         high_limit = 2147483647;
                         break;
-                }                  
-                printf("\n\n.Valid range for data values : %ld to %ld \n", low_limit, high_limit);
+                }
+                size_t counterData0 = 0;
+                //printf("\n\n.Valid range for data values : %ld to %ld \n", low_limit, high_limit);
                 for (i =1; i <= num_samples; i++) {
-                    printf("==========Sample %ld / %ld=============\n", i, num_samples);
+                    //printf("==========Sample %ld / %ld=============\n", i, num_samples);
                     read = fread(data_buffer, sizeof(data_buffer), 1, file);
+                    // <--
                     if (read == 1) {
                         // dump the data read
                         unsigned int  xchannels = 0;
                         int data_in_channel = 0;
                         for (xchannels = 0; xchannels < header.channels; xchannels ++ ) {
-                            printf("Channel#%d : ", (xchannels+1));
+                            //printf("Channel#%d : ", (xchannels+1));
                             // convert data from little endian to big endian based on bytes in each channel sample
                             if (bytes_in_each_channel == 4) {
                                 data_in_channel =   data_buffer[0] |
@@ -239,17 +251,24 @@ int readWav(const char *p_filepath)
                             else if (bytes_in_each_channel == 1) {
                                 data_in_channel = data_buffer[0];
                             }
-                            printf("%d ", data_in_channel);
-                            // check if value was in range
+                            //printf("%d ", data_in_channel);
                             if (data_in_channel < low_limit || data_in_channel > high_limit)
+                            {
                                 printf("**value out of range\n");
-                            printf(" | ");
+                                return 1;
+                            }
+                            dsp_data.data_0[counterData0] = data_in_channel;
+                            counterData0++;
+                            dsp_data.power += data_in_channel * data_in_channel;
+                            // check if value was in range
+                            //printf(" | ");
                         }
-                        printf("\n");
+                        //printf("\n");
                     }
                     else {
                         printf("Error reading file. %d bytes\n", read);
-                        break;
+                        return 1;
+                        //break;
                     }
                 } //    for (i =1; i <= num_samples; i++) {
             } //    if (size_is_correct) {
