@@ -107,7 +107,8 @@ main(int argc, char **argv)
     printf("  Входной файл: %s\n", filepath_in);
     printf("  Режим работы со смещениями каналов: %s\n", p_shift ? "Активирован" : "Не активирован");
 
-    readWav(filepath_in);
+    if (readWav(filepath_in, p_shift))
+        return 1;
     //system("stty raw");//seting the terminal in raw mode
     
     if (pipe(fdPipe) < 0)

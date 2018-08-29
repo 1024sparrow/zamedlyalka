@@ -91,7 +91,7 @@
 static struct HEADER header;
 static struct DSP_DATA dsp_data;
 
-int readWav(const char *p_filepath)//, int channelCount *po_channelCount, int sampleCopunt)
+int readWav(const char *p_filepath, int p_useShifting)//, int channelCount *po_channelCount, int sampleCopunt)
 {
     printf("reading Wav...\n");
     FILE *file = fopen(p_filepath, "r");
@@ -187,8 +187,9 @@ int readWav(const char *p_filepath)//, int channelCount *po_channelCount, int sa
     printf("Approx.Duration in seconds=%f\n", duration_in_seconds);
     printf("Approx.Duration in h:m:s=%s\n", seconds_to_time(duration_in_seconds));
     // read each sample from data chunk if PCM
+    long i =0;
     if (header.format_type == 1) { // PCM
-        dsp_data.channels = header.channels;
+        dsp_data.processingChannels = 1;
         dsp_data.count = num_samples;
         dsp_data.data_0 = malloc(num_samples * header.channels * sizeof(double));
 
@@ -198,7 +199,6 @@ int readWav(const char *p_filepath)//, int channelCount *po_channelCount, int sa
         //scanf("%c", &c);
         //if (c == 'Y' || c == 'y') {
         if (1) {
-            long i =0;
             char data_buffer[size_of_each_sample];
             int  size_is_correct = TRUE;
             // make sure that the bytes-per-sample is completely divisible by num.of channels
@@ -227,6 +227,11 @@ int readWav(const char *p_filepath)//, int channelCount *po_channelCount, int sa
                 }
                 size_t counterData0 = 0;
                 //printf("\n\n.Valid range for data values : %ld to %ld \n", low_limit, high_limit);
+                if (header.channels != 1 && header.channels != 2)
+                {
+                    printf("wav-файлы с количеством каналов %i не поддерживается", header.channels);
+                    return 1;
+                }
                 for (i =1; i <= num_samples; i++) {
                     //printf("==========Sample %ld / %ld=============\n", i, num_samples);
                     read = fread(data_buffer, sizeof(data_buffer), 1, file);
@@ -260,6 +265,7 @@ int readWav(const char *p_filepath)//, int channelCount *po_channelCount, int sa
                             dsp_data.data_0[counterData0] = data_in_channel;
                             counterData0++;
                             dsp_data.power += data_in_channel * data_in_channel;
+
                             // check if value was in range
                             //printf(" | ");
                         }
@@ -272,10 +278,35 @@ int readWav(const char *p_filepath)//, int channelCount *po_channelCount, int sa
                     }
                 } //    for (i =1; i <= num_samples; i++) {
             } //    if (size_is_correct) {
-            } // if (c == 'Y' || c == 'y') {
-            } //  if (header.format_type == 1) {
-            printf("Closing file..\n");
-            fclose(file);
+        } // if (c == 'Y' || c == 'y') {
+    } //  if (header.format_type == 1) {
+    printf("Closing file..\n");
+    fclose(file);
+
+    if (p_useShifting)
+    {
+        if (header.channels == 1)
+        {
+            for (i = 0 ; i < dsp_data.count ; i+=2)
+            {
+                dsp_data.data_0[i + 1] = dsp_data.data_0[i];
+            }
+        }
+        else if (header.channels == 2)
+        {
+            double t;
+            for (i = 0 ; i < dsp_data.count ; i++)
+            {
+                dsp_data.data_0[i] = (dsp_data.data_0[2 * i] + dsp_data.data_0[2 * i + 1]) / 2.;
+            }
+        }
+    }
+    else
+    {
+        if (header.channels == 2)
+            dsp_data.processingChannels = 2;
+    }
+    printf("Total power: %g", dsp_data.power);
 
     return 0;
 }
