@@ -1,1 +1,1 @@
-int readWav(const char *p_filepath, int p_useShifting);
+int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting);

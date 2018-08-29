@@ -51,6 +51,8 @@ help()
 int
 main(int argc, char **argv)
 {
+    struct DSP_DATA dsp_data;
+
     int p_shift = 0;
     *filepath_in = 0;
     int argCounter = argc;
