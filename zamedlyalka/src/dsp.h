@@ -17,6 +17,8 @@ struct DSP_DATA {
     int freqCountPerSegment; // сколько частот в интервале от 20Гц до 40Гц (столько же частот в интервале от 1кГц до 2кГц)
     double q; // добротность колебательных контуров
 
+    size_t freqCount;
+    double *frequences;
     double spectrogram;
 };
 

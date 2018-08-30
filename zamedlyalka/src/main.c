@@ -112,7 +112,7 @@ main(int argc, char **argv)
 
     if (readWav(filepath_in, &dsp_data, p_shift))
         return 1;
-    double freqStepKoeff = 1/80.;
+    double freqStepKoeff = 1/40.;
     if (process_signal(&dsp_data, 20, 20000, freqStepKoeff, 20))
         return 1;
     return 0;//
