@@ -1,4 +1,5 @@
 #include <stdio.h> // printf()
+#include <stdlib.h> // malloc()
 
 #include "dsp.h"
 
@@ -8,13 +9,13 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
         double i;
         int counter = 0;
         
-        printf("----------------------\n");
+        //printf("----------------------\n");
         for (i = p_startFreq ; i < p_endFreq ; i+= i*p_freqStepKoeff)
         {
-            printf("freq %i: %f Hz\n", counter, i);
+            //printf("freq %i: %f Hz\n", counter, i);
             counter++;
         }
-        printf("======================\n");
+        //printf("======================\n");
         dsp_data->freqCount = counter;
         dsp_data->frequences = malloc(counter * sizeof(double));
         counter = 0;
