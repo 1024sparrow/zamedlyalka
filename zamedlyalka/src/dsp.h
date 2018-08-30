@@ -17,7 +17,7 @@ struct DSP_DATA {
 
     size_t freqCount;
     double *frequences;
-    double spectrogram;
+    double *spectrogram;
 };
 
 /* Parameters:

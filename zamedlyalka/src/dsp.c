@@ -33,7 +33,7 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
     double *p = malloc(dsp_data->count * sizeof(double));
     double *q = malloc(dsp_data->count * sizeof(double));
     double k1, k2, k3, k4;
-    double h = 2. * M_PI / (double)(dsp_data->dicretFreq);
+    double h = 2. * M_PI / (double)(dsp_data->discretFreq);
     double e, w; // ЭДС вынуждения и собств. частота контура соответвенно
     for (o = 0 ; o < dsp_data->processingChannels ; o++)
     {
