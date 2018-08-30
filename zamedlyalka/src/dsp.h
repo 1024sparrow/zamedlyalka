@@ -10,6 +10,7 @@ struct DSP_RESONATOR_DATA {
 struct DSP_DATA {
     size_t count;
     int processingChannels;
+    int discretFreq; //     частота дискретизации
     double *data_0;
     double power; // мощность считается как сумма квадратов отсчётов. Считается по обоим каналам.
     struct DSP_RESONATOR_DATA *resonators;
