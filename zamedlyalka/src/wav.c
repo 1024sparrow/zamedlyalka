@@ -306,7 +306,7 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
         if (header.channels == 2)
             dsp_data->processingChannels = 2;
     }
-    printf("Total power: %g", dsp_data->power);
+    printf("Total power: %g\n", dsp_data->power);
 
     return 0;
 }

@@ -1,6 +1,8 @@
 #ifndef DSP_H
 #define DSP_H
 
+#include <sys/types.h>
+
 struct DSP_RESONATOR_DATA {
     int stub; // stub
 };
@@ -13,6 +15,6 @@ struct DSP_DATA {
     struct DSP_RESONATOR_DATA *resonators;
 };
 
-int process_signal();
+int process_signal(struct DSP_DATA *dsp_data, int p_useShifting);
 
 #endif // DSP_H

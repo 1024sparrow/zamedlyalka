@@ -110,10 +110,11 @@ main(int argc, char **argv)
     printf("  Входной файл: %s\n", filepath_in);
     printf("  Режим работы со смещениями каналов: %s\n", p_shift ? "Активирован" : "Не активирован");
 
-    if (readWav(filepath_in, &dsp_data, p_shift)) // boris here
+    if (readWav(filepath_in, &dsp_data, p_shift))
         return 1;
-    if (process_signal())
+    if (process_signal(&dsp_data, p_shift))
         return 1;
+    return 0;//
     //system("stty raw");//seting the terminal in raw mode
     
     if (pipe(fdPipe) < 0)
