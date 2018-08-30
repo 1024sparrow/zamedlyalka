@@ -189,9 +189,9 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
     // read each sample from data chunk if PCM
     long i =0;
     if (header.format_type == 1) { // PCM
-        dsp_data.processingChannels = 1;
-        dsp_data.count = num_samples;
-        dsp_data.data_0 = malloc(num_samples * header.channels * sizeof(double));
+        dsp_data->processingChannels = 1;
+        dsp_data->count = num_samples;
+        dsp_data->data_0 = malloc(num_samples * header.channels * sizeof(double));
 
 
         //printf("Dump sample data? Y/N?");
@@ -262,9 +262,9 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
                                 printf("**value out of range\n");
                                 return 1;
                             }
-                            dsp_data.data_0[counterData0] = data_in_channel;
+                            dsp_data->data_0[counterData0] = data_in_channel;
                             counterData0++;
-                            dsp_data.power += data_in_channel * data_in_channel;
+                            dsp_data->power += data_in_channel * data_in_channel;
 
                             // check if value was in range
                             //printf(" | ");
@@ -287,26 +287,26 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
     {
         if (header.channels == 1)
         {
-            for (i = 0 ; i < dsp_data.count ; i+=2)
+            for (i = 0 ; i < dsp_data->count ; i+=2)
             {
-                dsp_data.data_0[i + 1] = dsp_data.data_0[i];
+                dsp_data->data_0[i + 1] = dsp_data->data_0[i];
             }
         }
         else if (header.channels == 2)
         {
             double t;
-            for (i = 0 ; i < dsp_data.count ; i++)
+            for (i = 0 ; i < dsp_data->count ; i++)
             {
-                dsp_data.data_0[i] = (dsp_data.data_0[2 * i] + dsp_data.data_0[2 * i + 1]) / 2.;
+                dsp_data->data_0[i] = (dsp_data->data_0[2 * i] + dsp_data->data_0[2 * i + 1]) / 2.;
             }
         }
     }
     else
     {
         if (header.channels == 2)
-            dsp_data.processingChannels = 2;
+            dsp_data->processingChannels = 2;
     }
-    printf("Total power: %g", dsp_data.power);
+    printf("Total power: %g", dsp_data->power);
 
     return 0;
 }

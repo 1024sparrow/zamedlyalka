@@ -1,5 +1,5 @@
 #ifndef DSP_H
-#define DSP_h
+#define DSP_H
 
 struct DSP_RESONATOR_DATA {
     int stub; // stub

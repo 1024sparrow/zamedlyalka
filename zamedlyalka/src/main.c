@@ -110,7 +110,7 @@ main(int argc, char **argv)
     printf("  Входной файл: %s\n", filepath_in);
     printf("  Режим работы со смещениями каналов: %s\n", p_shift ? "Активирован" : "Не активирован");
 
-    if (readWav(filepath_in, p_shift)) // boris here
+    if (readWav(filepath_in, &dsp_data, p_shift)) // boris here
         return 1;
     if (process_signal())
         return 1;
