@@ -26,5 +26,15 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
         }
     }
 
+    int iFreq, iData0;
+    double freq, k1, k2, k3, k4, delta;
+    for (iFreq = 0 ; iFreq < dsp_data->freqCount ; iFreq++)
+    {
+        freq = dsp_data->frequences[iFreq];
+        for (iData0 = 0 ; iData0 < dsp_data->count ; iData0++)
+        {
+        }
+    }
+
     return 0;
 }
