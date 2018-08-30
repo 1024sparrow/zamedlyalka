@@ -112,7 +112,7 @@ main(int argc, char **argv)
 
     if (readWav(filepath_in, &dsp_data, p_shift))
         return 1;
-    if (process_signal(&dsp_data, p_shift))
+    if (process_signal(&dsp_data))
         return 1;
     return 0;//
     //system("stty raw");//seting the terminal in raw mode
