@@ -35,6 +35,8 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
     double *q = malloc(dsp_data->count * sizeof(double)); // заряд от времени
     double k1, k2, k3, k4;
     double h = 2. * M_PI / (double)(dsp_data->discretFreq);
+    //double h = 1. / (double)(dsp_data->discretFreq);
+    //double h = 1;
     double e, w; // ЭДС вынуждения и собств. частота контура соответвенно
     int periodCount;
     for (o = 0 ; o < dsp_data->processingChannels ; o++)
@@ -45,22 +47,26 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
             w = dsp_data->frequences[iFreq];
             periodCount = dsp_data->discretFreq / w / 2;
             p[0] = 0;
-            q[0] = 1;
+            q[0] = dsp_data->data_0[0];
+            double mean = 0;
             for (iData0 = 1; iData0 < dsp_data->count ; iData0++)
             {
                 //e = dsp_data->data_0[iData0 - 1];
-                e = dsp_data->data_0[(iData0 - 1) * l + o];
+                e = (dsp_data->data_0[(iData0 - 1) * l + o] + dsp_data->data_0[(iData0) * l + o])/2.;// / 1e16;
+                //printf(" %g", e);
                 k1 = h * (e - w * p[iData0 - 1] / p_q - w * w * q[iData0]);
                 k2 = h * (e - w * (p[iData0 - 1] + k1 / 2.) / p_q - w * w * q[iData0 - 1]);
                 k3 = h * (e - w * (p[iData0 - 1] + k2 / 2.) / p_q - w * w * q[iData0 - 1]);
                 k4 = h * (e - w * (p[iData0 - 1] + k3) / p_q - w * w * q[iData0 - 1]);
                 p[iData0] = p[iData0 - 1] + (k1 + 2. * (k2 + k3) + k4) / 6.;
+                mean += p[iData0];
                 k1 = h * p[iData0 - 1];
                 k2 = h * (p[iData0 - 1] + k1/2.);
                 k3 = h * (p[iData0 - 1] + k2/2.);
                 k4 = h * (p[iData0 - 1] + k3);
                 q[iData0] = q[iData0 - 1] + (k1 + 2. * (k2 + k3) + k4) / 6.;
             }
+            mean /= (double)dsp_data->count;
             // Записываем усреднённые по perioCount отсчётам значения мгновенной мощности сигнала (сумма квадратов значений p)
             //if (iFreq > 0)
             //    break;
@@ -91,8 +97,8 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
                     cand = 0;
                     for (int i = a ; i < b ; i++)
                     {
-                        double sq = p[i];
-                        cand += sq * sq;
+                        double sq = (p[i] - mean) / (double)(periodCount * periodCount);
+                        cand += (sq * sq);
                     }
                     prevA = a;
                 }
@@ -100,15 +106,22 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
                 {
                     if (a != prevA)
                     {
-                        double sq = p[prevA];
+                        double sq = p[prevA] / (double)(periodCount * periodCount);
                         cand -= sq * sq;
                         sq = p[b - 1];
                         cand += sq * sq;
                         prevA = a;
                     }
                 }
+                //cand = p[iData0] / (w * w);// / w / w / w;//
+                if (w > 49 && w < 51)
+                    ;//printf("--- %g\n", cand);
+                if (w > 53 && w < 54)
+                    ;//printf("=== %g\n", cand);
                 if (cand > maxPowerForFreq)
                     maxPowerForFreq = cand;
+                if (w > 499 && w < 520)
+                    ;//printf("+++ %g\n", cand);
                 oSpectr[iData0] = cand;
             }
             printf("Пишу спектрограмму по частоте %f Гц. пиковая плотность мощности: %g\n", w, maxPowerForFreq);//
