@@ -192,6 +192,7 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
         dsp_data->processingChannels = 1;
         dsp_data->count = num_samples;
         dsp_data->data_0 = malloc(num_samples * header.channels * sizeof(double));
+        dsp_data->discretFreq = header.sample_rate;
 
 
         //printf("Dump sample data? Y/N?");
