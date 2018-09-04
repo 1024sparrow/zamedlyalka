@@ -8,17 +8,17 @@
 ################################################################
 
 QT = core widgets
-CONFIG+=qwt
-#TARGET       = simpleplot
+#CONFIG+=qwt
+#TARGET       = model
+DESTDIR = bin
 
-INCLUDEPATH += /usr/include/qwt
-LIBS += -lqwt
+#INCLUDEPATH += /usr/include/qwt
+#LIBS += -lqwt
 
 SOURCES = \
     main.cpp \
-    mw.cpp
+    mw.cpp \
+    process.cpp
 
 HEADERS += \
     mw.h
-
-FORMS +=

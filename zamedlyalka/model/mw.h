@@ -13,6 +13,9 @@ public:
 private slots:
     void onStartBnClicked();
 private:
+    void process(double p_wholeTime, double p_discretFreq,
+                 size_t &pout_count, double *&pout_array, double *&pout_timeArray);
+
     double time_whole;
     QLineEdit *leWholeTime;
     QLineEdit *leDicretFreq;

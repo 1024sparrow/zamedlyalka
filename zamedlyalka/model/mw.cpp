@@ -1,11 +1,17 @@
 #include "mw.h"
 
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <fcntl.h>
+
 #include <QBoxLayout>
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QList>
 #include <QFrame>
+#include <QProcess>
 
 //buttons
 
@@ -48,7 +54,7 @@ MW::MW()
 
 void MW::onStartBnClicked()
 {
-    double whileTime = leWholeTime->text().toDouble();
+    double wholeTime = leWholeTime->text().toDouble();
     double discretFreq = leDicretFreq->text().toDouble();
     // ... (получаем массив данных)
     /*
@@ -57,4 +63,19 @@ void MW::onStartBnClicked()
      * 3. Запускаем (синхронно) gnuplot. Пусть gnuplot читает данные из data.dat и пишет svg-картинку в image.svg
      * 4. Обновляем отображение нашей отображалки SVG-файла wCanvas.
      */
+    size_t sz = 0;
+    double *array, *timeArray;
+    process(wholeTime, discretFreq, sz, array, timeArray);
+
+    int fdDat = open("data.dat",  O_CREAT|O_WRONLY|O_TRUNC, S_IRUSR|S_IWUSR);
+    const char *h = "#t i\n";
+    write(fdDat, h, strlen(h));
+    for (size_t i = 0 ; i < sz ; i++)
+    {
+        dprintf(fdDat, "%f %f\n", timeArray[i], array[i]);
+    }
+    ::close(fdDat);
+
+    // fork -> execute "gnuplot plot.plt" into "bin/"
+    //QProcess pr;
 }
