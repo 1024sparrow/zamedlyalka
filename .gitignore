@@ -7,4 +7,5 @@ tmp/
 .qmake.stash
 testapp/Makefile
 compiled/
-zamedlyalka/model/model.pro.user
+zamedlyalka/model/bin/model
+zamedlyalka/model/bin/data.dat
