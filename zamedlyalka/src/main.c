@@ -114,7 +114,7 @@ main(int argc, char **argv)
         return 1;
     double freqStepKoeff = 1/40.;
     //if (process_signal(&dsp_data, 20, 20000, freqStepKoeff, 20))
-    if (process_signal(&dsp_data, 20, 10000, freqStepKoeff, 2))
+    if (process_signal(&dsp_data, 3, 1592, freqStepKoeff, 20000.))
         return 1;
     return 0;//
     //system("stty raw");//seting the terminal in raw mode

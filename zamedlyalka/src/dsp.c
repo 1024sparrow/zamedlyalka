@@ -1,8 +1,10 @@
 #include <stdio.h> // printf()
 #include <stdlib.h> // malloc()
+#include <sys/types.h>
 #include <math.h> // M_PI
 
 #include "dsp.h"
+double *sinus_gen(double *p_retval, size_t p_count, double p_w, double p_wDiscr, double p_power); // implemented in sinus_gen.c
 
 int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFreq, double p_freqStepKoeff, double p_q)
 {
@@ -39,7 +41,112 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
     //double h = 1;
     double e, w; // ЭДС вынуждения и собств. частота контура соответвенно
     int periodCount;
-    for (o = 0 ; o < dsp_data->processingChannels ; o++)
+
+    //{{ test
+    //
+    {
+        size_t i;
+        double power0 = 0;
+        double mean0 = 0;
+        for (i = 0 ; i < dsp_data->count ; i++)
+        {
+            mean0 += dsp_data->data_0[i];
+        }
+        mean0 /= (double)dsp_data->count;
+        for (i = 0 ; i < dsp_data->count ; i++)
+        {
+            mean0 += dsp_data->data_0[i];
+            double sq = dsp_data->data_0[i] - mean0;
+            power0 += sq * sq;
+        }
+        //for (iFreq = 0 ; iFreq < dsp_data->freqCount ; iFreq++)
+        {
+            //w = dsp_data->frequences[iFreq];
+            w = 50.;
+            double *sinus = sinus_gen(0, dsp_data->count, w, dsp_data->discretFreq, power0);
+            p[0] = 0;
+            q[0] = dsp_data->data_0[0];
+            double mean = p[0], power = 0;
+            periodCount = dsp_data->discretFreq / w / 2;//
+            for (iData0 = 1; iData0 < dsp_data->count ; iData0++)
+            {
+                //e = dsp_data->data_0[iData0 - 1];
+                //e = (dsp_data->data_0[(iData0 - 1) * l + o] + dsp_data->data_0[(iData0) * l + o])/2.;// / 1e16;
+                e = (sinus[iData0] + sinus[iData0 - 1]) / 2. / 999999999999.;
+                //printf(" %g", e);
+                k1 = h * (e - w * p[iData0 - 1] / p_q - w * w * q[iData0]);
+                k2 = h * (e - w * (p[iData0 - 1] + k1 / 2.) / p_q - w * w * q[iData0 - 1]);
+                k3 = h * (e - w * (p[iData0 - 1] + k2 / 2.) / p_q - w * w * q[iData0 - 1]);
+                k4 = h * (e - w * (p[iData0 - 1] + k3) / p_q - w * w * q[iData0 - 1]);
+                p[iData0] = p[iData0 - 1] + (k1 + 2. * (k2 + k3) + k4) / 6.;
+                mean += p[iData0];
+                k1 = h * p[iData0 - 1];
+                k2 = h * (p[iData0 - 1] + k1/2.);
+                k3 = h * (p[iData0 - 1] + k2/2.);
+                k4 = h * (p[iData0 - 1] + k3);
+                q[iData0] = q[iData0 - 1] + (k1 + 2. * (k2 + k3) + k4) / 6.;
+            }
+            mean /= (double)dsp_data->count;
+            for (iData0 = 0 ; iData0 < dsp_data->count ; iData0++)
+            {
+                double sq = p[iData0] - mean;
+                power += sq * sq;
+            }
+            //printf("freq %f Гц, mean %g, powerKoeff %e, h=%g, preioCount=%i\n", w, mean, power0/power, h, periodCount);
+            /*for (i = 0; i < dsp_data->count ; i++)
+            {
+                p[i] *= power0 / power;
+            }*/
+            double powerKoeff = power0 / power;
+
+            p[0] = 0;
+            q[0] = 0;
+            
+            free(sinus);
+            for (w = 20. ; w < 200. ; w += 1.)
+            {
+                double *sinus = sinus_gen(0, dsp_data->count, w, dsp_data->discretFreq, power0);
+                mean = 0;
+                for (iData0 = 1; iData0 < dsp_data->count ; iData0++)
+                {
+                    e = sinus[iData0 - 1];// * powerKoeff;
+                    //e = (dsp_data->data_0[(iData0 - 1) * l + o] + dsp_data->data_0[(iData0) * l + o])/2.;// / 1e16;
+                    //e = (sinus[iData0] + sinus[iData0 - 1]) / 2. / 999999999999.;
+                    //printf(" %g", e);
+                    k1 = h * (e - w * p[iData0 - 1] / p_q - w * w * q[iData0]);
+                    k2 = h * (e - w * (p[iData0 - 1] + k1 / 2.) / p_q - w * w * q[iData0 - 1]);
+                    k3 = h * (e - w * (p[iData0 - 1] + k2 / 2.) / p_q - w * w * q[iData0 - 1]);
+                    k4 = h * (e - w * (p[iData0 - 1] + k3) / p_q - w * w * q[iData0 - 1]);
+                    p[iData0] = p[iData0 - 1] + (k1 + 2. * (k2 + k3) + k4) / 6.;
+                    mean += p[iData0];
+                    k1 = h * p[iData0 - 1];
+                    k2 = h * (p[iData0 - 1] + k1/2.);
+                    k3 = h * (p[iData0 - 1] + k2/2.);
+                    k4 = h * (p[iData0 - 1] + k3);
+                    q[iData0] = q[iData0 - 1] + (k1 + 2. * (k2 + k3) + k4) / 6.;
+                }
+                free(sinus);
+                mean /= (double)dsp_data->count;
+                power = 0;
+                for (iData0 = 0 ; iData0 < dsp_data->count ; iData0++)
+                {
+                    double sq = (p[iData0] - mean);
+                    //printf("        %f\n", sq);
+                    power += sq * sq;// * powerKoeff;
+                }
+                printf("freq %f (%f) Гц -- power %e, mean %g\n", w, w * 2. * M_PI, power, mean);
+            }
+            //for (iData0 = 0 ; iData0 < dsp_data->count ; iData0++)
+            //{
+            //    p[i] *= powerKoeff;
+            //}
+            //printf("freq %f Гц, mean %g, powerKoeff %e, h=%g, preioCount=%i\n", w * 2. * M_PI, mean, power, h, periodCount);
+            //printf("freq %f (%f) Гц, mean %g, powerKoeff %e, h=%g, preioCount=%i\n", w, w * 2. * M_PI, mean, power, h, periodCount);
+        }
+    }
+    //}} test
+
+    /*for (o = 0 ; o < dsp_data->processingChannels ; o++)
     {
         for (iFreq = 0 ; iFreq < dsp_data->freqCount ; iFreq++)
         {
@@ -126,7 +233,7 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
             }
             printf("Пишу спектрограмму по частоте %f Гц. пиковая плотность мощности: %g\n", w, maxPowerForFreq);//
         }
-    }
+    }*/
 
     printf("Предобработка завершена.\n");
     return 0;
