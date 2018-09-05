@@ -21,6 +21,7 @@ main()
     size_t sz = 0;
     double *array, *timeArray;
     process(&sz, &array, &timeArray);
+    //return 0;//
 
     int fdDat = open("data.dat",  O_CREAT|O_WRONLY|O_TRUNC, S_IRUSR|S_IWUSR);
     const char *h = "#t i\n";

@@ -1,6 +1,7 @@
 #include <sys/types.h>
 #include <stdlib.h> // malloc()
 #include <math.h> // M_PI
+#include <stdio.h> // printf()
 
 // p_power - ненормированная (т.е. тупо сумма квадратов отклонений от среднего)
 double *sinus_gen(double *p_retval, size_t p_count, double p_w, double p_wDiscr, double p_power)
@@ -10,14 +11,19 @@ double *sinus_gen(double *p_retval, size_t p_count, double p_w, double p_wDiscr,
     double power = 0;
     for (i = 0 ; i < p_count ; i++)
     {
-        double cand = sin(2. * (double)M_PI * (double)i / p_w / p_wDiscr);
+        double cand = sin(2. * (double)M_PI * (double)i * p_w / p_wDiscr);
         //double cand = sin((double)i / p_w / p_wDiscr);
+        //printf("**%g", cand);//
         retVal[i] = cand;
         power += cand * cand;
     }
-    for (i = 0 ; i < p_count ; i++)
+    if (p_power)
     {
-        retVal[i] *= p_power / power;
+        for (i = 0 ; i < p_count ; i++)
+        {
+            retVal[i] *= p_power / power;
+            //printf("*%g", retVal[i]);//
+        }
     }
     return retVal;
 }
