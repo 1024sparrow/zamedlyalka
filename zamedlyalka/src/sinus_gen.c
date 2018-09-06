@@ -7,17 +7,28 @@ double *sinus_gen(double *p_retval, size_t p_count, double p_w, double p_wDiscr,
 {
     double *retVal = p_retval ? p_retval : malloc(p_count * sizeof(double));
     size_t i;
+    double mean = 0;
+    for (i = 0 ; i < p_count ; i++)
+    {
+        double cand = sin(2. * (double)M_PI * (double)i * p_w / p_wDiscr);
+        //double cand = sin((double)i / p_w / p_wDiscr);
+        retVal[i] = cand;
+        mean += cand;
+    }
+    mean /= (double)p_count;
     double power = 0;
     for (i = 0 ; i < p_count ; i++)
     {
-        double cand = sin(2. * (double)M_PI * (double)i / p_w / p_wDiscr);
-        //double cand = sin((double)i / p_w / p_wDiscr);
+        double cand = retVal[i] - mean;
         retVal[i] = cand;
         power += cand * cand;
     }
-    for (i = 0 ; i < p_count ; i++)
+    if (p_power)
     {
-        retVal[i] *= p_power / power;
+        for (i = 0 ; i < p_count ; i++)
+        {
+            retVal[i] *= p_power / power;
+        }
     }
     return retVal;
 }
