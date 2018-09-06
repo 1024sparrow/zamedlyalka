@@ -238,7 +238,8 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
             //    break;
             //printf("Пишу спектрограмму по частоте %f Гц\n", w);//
             double cand, maxPowerForFreq = 0;
-            size_t prevA;
+            size_t prevA = 1;
+            mean = 0;
             for (iData0 = 0; iData0 < dsp_data->count ; iData0++)
             {
                 int a = iData0 - periodCount;
@@ -258,6 +259,25 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
                     printf("Слишком маленькая выборка для такой частоты.");
                     return 1;
                 }
+#define LOCAL
+#ifdef LOCAL
+                if (a != prevA)
+                {
+                    mean = 0;
+                    for (int i = a ; i < b ; i++)
+                    {
+                        mean += p[i];
+                    }
+                    mean /= (double)periodCount;
+                    cand = 0;
+                    for (int i = a ; i < b ; i++)
+                    {
+                        double sq = (p[i] - mean) / (double)periodCount;
+                        cand += (sq * sq);
+                    }
+                    prevA = a;
+                }
+#else
                 if (iData0 == 0)
                 {
                     cand = 0;
@@ -279,6 +299,7 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
                         prevA = a;
                     }
                 }
+#endif
                 //cand = p[iData0] / (w * w);// / w / w / w;//
                 if (w > 49 && w < 51)
                     ;//printf("--- %g\n", cand);
