@@ -1,7 +1,16 @@
 #include "average.h"
+
+#include <string.h>
+
 int averageArray(double *p_array, size_t p_arrayCount, size_t p_averageWidth, double *p_resultArray)
 {
     size_t i;
+    if (p_averageWidth == 0)
+    {
+        if (p_resultArray != p_array)
+            memcpy(p_resultArray, p_array, p_arrayCount * sizeof(double));
+        return 0;
+    }
     double mean;
     if (p_averageWidth >= p_arrayCount)
     {
