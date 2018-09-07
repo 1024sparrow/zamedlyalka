@@ -11,7 +11,7 @@ double *sinus_gen(double *p_retval, size_t p_count, double p_w, double p_wDiscr,
     double power = 0;
     for (i = 0 ; i < p_count ; i++)
     {
-        double cand = sin(2. * (double)M_PI * (double)i * p_w / p_wDiscr) + 10.;
+        double cand = sin(2. * (double)M_PI * (double)i * p_w / p_wDiscr);
         //double cand = sin((double)i / p_w / p_wDiscr);
         //printf("**%g", cand);//
         retVal[i] = cand;

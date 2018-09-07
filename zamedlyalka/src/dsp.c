@@ -4,6 +4,7 @@
 #include <math.h> // M_PI
 
 #include "dsp.h"
+#include "average.h"
 double *sinus_gen(double *p_retval, size_t p_count, double p_w, double p_wDiscr, double p_power); // implemented in sinus_gen.c
 
 int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFreq, double p_freqStepKoeff, double p_q)
@@ -164,10 +165,34 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
         }
         for (iFreq = 0 ; iFreq < dsp_data->freqCount ; iFreq++)
         {
+            /*
+             * Перед тем, как подаём сигнал на колебательный контур, отфильтровываем нижние частоты.
+             * Фильтрация нижних частот производится усреднением 
+             */
             double *oSpectr = dsp_data->spectrogram + o * (dsp_data->freqCount * dsp_data->count) + iFreq * dsp_data->count;
             w = dsp_data->frequences[iFreq];
             double *sinus = sinus_gen(0, dsp_data->count, w, dsp_data->discretFreq, 1000);
             periodCount = dsp_data->discretFreq / w / 2;
+            periodCount *= 3;//
+
+            // определяем мощность синуса
+            double powerSinus = 0;
+            double sinusMean = 0;
+            for (i = 0 ; i < dsp_data->count ; i++)
+            {
+                sinusMean += sinus[i];
+            }
+            sinusMean /= (double)dsp_data->count;
+            for (i = 0 ; i < dsp_data->count ; i++)
+            {
+                double sq = sinus[i] - sinusMean;
+                powerSinus += (sq * sq);
+            }
+
+            //periodCount *= 50;
+            //{{ фильтруем нижние частоты
+            //(void)averageArray(dsp_data->data_0, dsp_data->count, periodCount, dsp_data->data_0);
+            //}}
             p[0] = 0;
             q[0] = sinus[0];
             mean = 0;
@@ -198,8 +223,8 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
                 double sq = p[iData0] - mean;
                 power0 += (sq * sq);
             }
-            double powerKoeff = power0 / powerWhole;
-            printf("%f Hz powerKoeff: %e\t", w, powerKoeff);
+            double powerKoeff = power0 / powerSinus;//powerWhole;
+            printf("%f Hz powerKoeff: %e\t", w / 1.1845230875000001, powerKoeff);
             free(sinus);
             p[0] = 0;
             q[0] = dsp_data->data_0[0];
@@ -229,7 +254,7 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
                 power1 += (sq * sq);
             }
             //power1 /= (powerKoeff);
-            printf("--------> выходная мощность на резонаторе: %g\t", power1);
+            printf("--------> выходная мощность на резонаторе: %g\t", power1*powerKoeff);
             //printf("\n");continue;
 
 
@@ -237,9 +262,11 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
             //if (iFreq > 0)
             //    break;
             //printf("Пишу спектрограмму по частоте %f Гц\n", w);//
-            double cand, maxPowerForFreq = 0;
+            double maxPowerForFreq = 0;
             size_t prevA = 1;
             mean = 0;
+            double cand = 0;
+            double *elements = malloc(dsp_data->count * sizeof(double));
             for (iData0 = 0; iData0 < dsp_data->count ; iData0++)
             {
                 int a = iData0 - periodCount;
@@ -259,9 +286,9 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
                     printf("Слишком маленькая выборка для такой частоты.");
                     return 1;
                 }
-#define LOCAL
+//#define LOCAL
 #ifdef LOCAL
-                if (a != prevA)
+                /*if (a != prevA)
                 {
                     mean = 0;
                     for (int i = a ; i < b ; i++)
@@ -276,14 +303,47 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
                         cand += (sq * sq);
                     }
                     prevA = a;
+                }*/
+                if (iData0 == 0)
+                {
+                    for (i = a ; i < b ; i++)
+                    {
+                        mean += p[i];
+                    }
+                    mean /= (double)periodCount;
+                    for (i = a ; i < b ; i++)
+                    {
+                        double sq = p[i] - mean;
+                        sq *= sq;
+                        elements[i] = sq;
+                        cand += sq;
+                    }
                 }
+                else
+                {
+                    if (a != prevA)
+                    {
+                        mean += (p[b - 1] - p[a - 1])/(double)periodCount;
+                        double sq = p[b - 1] - mean;
+                        sq *= sq;
+                        elements[b - 1] = sq;
+                        cand += (sq - elements[a - 1]);
+                    }
+                }
+                //printf("\n%g - %g -- %g\n", cand, powerKoeff, cand / powerKoeff);
+                cand /= power0;
+                cand /= (double)periodCount;
+                
+                //cand /= (double)dsp_data->count;
+                //cand *= (powerKoeff / (double)dsp_data->count);
+                //cand /= (double)(powerKoeff);
 #else
                 if (iData0 == 0)
                 {
                     cand = 0;
                     for (int i = a ; i < b ; i++)
                     {
-                        double sq = (p[i] - mean) / (double)(periodCount);
+                        double sq = (p[i] - mean);/// (double)(periodCount);
                         cand += (sq * sq);
                     }
                     prevA = a;
@@ -292,14 +352,17 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
                 {
                     if (a != prevA)
                     {
-                        double sq = (p[prevA] - mean) / (double)(periodCount);
+                        double sq = (p[prevA] - mean);// / (double)(periodCount);
                         cand -= sq * sq;
-                        sq = (p[b - 1] - mean) / (double)(periodCount);
+                        sq = (p[b - 1] - mean);// / (double)(periodCount);
                         cand += sq * sq;
                         prevA = a;
                     }
                 }
+                cand /= (double)dsp_data->count;
+                //cand /= power0;
 #endif
+                //cand /= powerKoeff;
                 //cand = p[iData0] / (w * w);// / w / w / w;//
                 if (w > 49 && w < 51)
                     ;//printf("--- %g\n", cand);
@@ -311,7 +374,11 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
                     ;//printf("+++ %g\n", cand);
                 oSpectr[iData0] = cand;
             }
+            free(elements);
             printf("Пишу спектрограмму по частоте %f Гц. пиковая плотность мощности: %g\n", w, maxPowerForFreq);//
+
+            // Выфильтровываем данную частоту перед передачейц сигнала на следующий колебательный контур
+            //(void)averageArray(dsp_data->data_0, dsp_data->count, periodCount * 10, dsp_data->data_0);
         }
     }
 
