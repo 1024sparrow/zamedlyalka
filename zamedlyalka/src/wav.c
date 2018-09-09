@@ -340,3 +340,15 @@ char* seconds_to_time(float raw_seconds) {
     sprintf(hms, "%d:%d:%d.%d", hours, minutes, seconds, milliseconds);
     return hms;
 }
+
+int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
+{
+    return 0;
+    FILE *file = fopen(filepath, "w");
+    if (!file)
+    {
+        fprintf(stderr, "Не смог открыть выходной файл для записи.\n");
+        exit(1);
+    }
+    fclose(file);
+}

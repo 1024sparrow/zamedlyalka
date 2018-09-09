@@ -19,6 +19,7 @@
 #define debug(T) {printf(T);}
 
 static char filepath_in[1024];
+static char filepath_out[1024];
 
 /*
 SIGUSR1 - от родительского к дочернему
@@ -55,6 +56,7 @@ main(int argc, char **argv)
 
     int p_shift = 0;
     *filepath_in = 0;
+    *filepath_out = 0;
     int argCounter = argc;
     // ----------------------------------
     int c;
@@ -69,7 +71,7 @@ main(int argc, char **argv)
             {0,         0,                 0,  0 }
         };
 
-        c = getopt_long(argc, argv, "Ssh", long_options, &option_index);
+        c = getopt_long(argc, argv, "Ssho:", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -90,6 +92,10 @@ main(int argc, char **argv)
         case 'h':
             help();
             return 0;
+        case 'o':
+            printf("file to save: %s\n", optarg);
+            strcpy(filepath_out, optarg);
+            break;
         case '?':
             printf("Для справки по программе вызовите программу с ключом --help.\n");
             exit(1);
@@ -116,6 +122,11 @@ main(int argc, char **argv)
     //if (process_signal(&dsp_data, 20, 20000, freqStepKoeff, 20))
     if (process_signal(&dsp_data, 20, 1000, freqStepKoeff, 6))
         return 1;
+    if (*filepath_out)
+    {
+        writeWav(filepath_out, &dsp_data);
+        return 0;
+    }
     return 0;//
     //system("stty raw");//seting the terminal in raw mode
     
