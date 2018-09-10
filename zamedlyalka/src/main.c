@@ -124,6 +124,8 @@ main(int argc, char **argv)
         return 1;
     if (*filepath_out)
     {
+        if (!dsp_test(&dsp_data))
+            return -1;
         writeWav(filepath_out, &dsp_data);
         return 0;
     }

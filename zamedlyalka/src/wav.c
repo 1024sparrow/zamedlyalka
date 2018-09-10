@@ -341,14 +341,38 @@ char* seconds_to_time(float raw_seconds) {
     return hms;
 }
 
+void __(size_t from, char *to, short bytes)
+{
+    if (bytes == 4)
+    {
+        to[3] = from & 0xff000000;
+        to[2] = from & 0xff0000;
+    }
+    to[1] = from & 0xff00;
+    to[0] = from & 0xff;
+}
 int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
 {
-    return 0;
     FILE *file = fopen(filepath, "w");
     if (!file)
     {
         fprintf(stderr, "Не смог открыть выходной файл для записи.\n");
         exit(1);
     }
+    unsigned char buffer4[4];
+	unsigned char buffer2[2];
+    fwrite(header.riff, sizeof(header.riff), 1, file);
+    __(header.overall_size, buffer4, 4); fwrite(buffer4, sizeof(buffer4), 1, file);// не совпадает
+    fwrite(header.wave, sizeof(header.wave), 1, file);
+    fwrite(header.fmt_chunk_marker, sizeof(header.fmt_chunk_marker), 1, file);
+    __(header.length_of_fmt, buffer4, 4); fwrite(buffer4, sizeof(buffer4), 1, file);
+    __(header.format_type, buffer2, 2); fwrite(buffer2, sizeof(buffer2), 1, file);
+    __(2, buffer2, 2);/*два канала*/ fwrite(buffer2, sizeof(buffer2), 1, file);
+    __(header.sample_rate, buffer4, 4); fwrite(buffer4, sizeof(buffer4), 1, file);// не совпадает
+
+
+    __(header.byterate, buffer4, 4); fwrite(buffer4, sizeof(buffer4), 1, file);
+    __(header.block_align, buffer2, 2); fwrite(buffer2, sizeof(buffer2), 1, file);
+
     fclose(file);
 }
