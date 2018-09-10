@@ -120,8 +120,8 @@ main(int argc, char **argv)
         return 1;
     double freqStepKoeff = 1/40.;
     //if (process_signal(&dsp_data, 20, 20000, freqStepKoeff, 20))
-    if (process_signal(&dsp_data, 20, 1000, freqStepKoeff, 6))
-        return 1;
+    //if (process_signal(&dsp_data, 20, 1000, freqStepKoeff, 6))
+    //    return 1;
     if (*filepath_out)
     {
         if (!dsp_test(&dsp_data))

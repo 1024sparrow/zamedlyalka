@@ -373,6 +373,49 @@ int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
 
     __(header.byterate, buffer4, 4); fwrite(buffer4, sizeof(buffer4), 1, file);
     __(header.block_align, buffer2, 2); fwrite(buffer2, sizeof(buffer2), 1, file);
+    __(header.bits_per_sample, buffer2, 2); fwrite(buffer2, sizeof(buffer2), 1, file);
+    fwrite(header.data_chunk_header, sizeof(header.data_chunk_header), 1, file);
+    __(header.data_size, buffer4, 4); fwrite(buffer4, sizeof(buffer4), 1, file);
+
+    long low_limit = 0l;
+    long high_limit = 0l;
+    switch (header.bits_per_sample) {
+        case 8:
+            low_limit = -128;
+            high_limit = 127;
+            break;
+        case 16:
+            low_limit = -32768;
+            high_limit = 32767;
+            break;
+        case 32:
+            low_limit = -2147483648;
+            high_limit = 2147483647;
+            break;
+    }
+    int sizeOfEachSample = (2 * header.bits_per_sample) / 8; // два канала
+    char dataBuffer[sizeOfEachSample];
+
+    size_t i;
+    for (i = 0 ; i < dsp_data->count ; i++)
+    {
+        //fwrite();
+        double real = dsp_data->data_1[i];
+        if (real > high_limit)
+            real = high_limit;
+        if (real < low_limit)
+            real = low_limit;
+        //unsigned long realLong = real;
+        int32_t realLong = real;//(real < 0) ? real + high_limit : real;
+        realLong = (real < 0) ? (u_int32_t)(real + 2 * ((unsigned long)high_limit + 1)) : real;
+        printf(" %u - %f: %u %u %u %u", realLong, real, (unsigned char)(realLong & 0xff), (unsigned char)(realLong & 0xff00), (unsigned char)(realLong & 0xff0000), (unsigned char)(realLong & 0xff000000));
+        //printf(" \t\t\t%u - %f: %ul %u %u %u\n", realLong, real, realLong & 0xff, realLong & 0xff00, realLong & 0xff0000, realLong & 0x8f000000);
+        printf("\n");
+        /*for (int ii = 0, cc = header.bits_per_sample / 8 ; ii < cc ; ii++)
+        {
+            char cand = realLong 
+        }*/
+    }
 
     fclose(file);
 }
