@@ -257,6 +257,7 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
                             else if (bytes_in_each_channel == 1) {
                                 data_in_channel = data_buffer[0];
                             }
+                            //printf("** %i: %u %u %u %u\n", data_in_channel, (unsigned char)data_buffer[0], (unsigned char)data_buffer[1], (unsigned char)data_buffer[2], (unsigned char)data_buffer[3]);
                             //printf("%d ", data_in_channel);
                             if (data_in_channel < low_limit || data_in_channel > high_limit)
                             {
