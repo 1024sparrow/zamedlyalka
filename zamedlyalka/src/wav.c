@@ -210,34 +210,13 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
                 size_is_correct = FALSE;
             }
             if (size_is_correct) {
-                // the valid amplitude range for values based on the bits per sample
-                long low_limit = 0l;
-                long high_limit = 0l;
-                switch (header.bits_per_sample) {
-                    case 8:
-                        low_limit = -128;
-                        high_limit = 127;
-                        break;
-                    case 16:
-                        low_limit = -32768;
-                        high_limit = 32767;
-                        break;
-                    case 32:
-                        low_limit = -2147483648;
-                        high_limit = 2147483647;
-                        break;
-                }
-                size_t counterData0 = 0;
-                //printf("\n\n.Valid range for data values : %ld to %ld \n", low_limit, high_limit);
                 if (header.channels != 1 && header.channels != 2)
                 {
                     printf("wav-файлы с количеством каналов %i не поддерживается", header.channels);
                     return 1;
                 }
                 for (i =1; i <= num_samples; i++) {
-                    //printf("==========Sample %ld / %ld=============\n", i, num_samples);
                     read = fread(data_buffer, sizeof(data_buffer), 1, file);
-                    // <--
                     if (read == 1) {
                         for (int iChannel = 0 ; iChannel < header.channels ; iChannel++)
                         {
@@ -262,12 +241,10 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
                             printf("cand: %f -- %u %u %u %u\n", cand, data_buffer[0], data_buffer[1], data_buffer[2], data_buffer[3]);
                             dsp_data->data_0[iChannel * num_samples + i] - cand;
                         }
-                        //dsp_data->power += data_in_channel * data_in_channel;
                     }
                     else {
                         printf("Error reading file. %d bytes\n", read);
                         return 1;
-                        //break;
                     }
                 } //    for (i =1; i <= num_samples; i++) {
             } //    if (size_is_correct) {
@@ -377,6 +354,7 @@ int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
             high_limit = 2147483647;
             break;
     }
+    //printf("\n\n.Valid range for data values : %ld to %ld \n", low_limit, high_limit);
     int sizeOfEachSample = (2 * header.bits_per_sample) / 8; // два канала
     char dataBuffer[sizeOfEachSample];
 
