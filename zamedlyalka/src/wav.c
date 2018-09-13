@@ -200,10 +200,11 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
         //scanf("%c", &c);
         //if (c == 'Y' || c == 'y') {
         if (1) {
-            char data_buffer[size_of_each_sample];
+            //printf("size of each sample: %lx\n", size_of_each_sample);// output: 4
+            unsigned char data_buffer[size_of_each_sample];
             int  size_is_correct = TRUE;
             // make sure that the bytes-per-sample is completely divisible by num.of channels
-            long bytes_in_each_channel = (size_of_each_sample / header.channels);
+            int bytes_in_each_channel = (size_of_each_sample / header.channels);
             if ((bytes_in_each_channel  * header.channels) != size_of_each_sample) {
                 printf("Error: %ld x %ud <> %ld\n", bytes_in_each_channel, header.channels, size_of_each_sample);
                 size_is_correct = FALSE;
@@ -238,40 +239,30 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
                     read = fread(data_buffer, sizeof(data_buffer), 1, file);
                     // <--
                     if (read == 1) {
-                        // dump the data read
-                        unsigned int  xchannels = 0;
-                        int data_in_channel = 0;
-                        for (xchannels = 0; xchannels < header.channels; xchannels ++ ) {
-                            //printf("Channel#%d : ", (xchannels+1));
-                            // convert data from little endian to big endian based on bytes in each channel sample
-                            if (bytes_in_each_channel == 4) {
-                                data_in_channel =   data_buffer[0] |
-                                    (data_buffer[1]<<8) |
-                                    (data_buffer[2]<<16) |
-                                    (data_buffer[3]<<24);
-                            }
-                            else if (bytes_in_each_channel == 2) {
-                                data_in_channel = data_buffer[0] |
-                                    (data_buffer[1] << 8);
-                            }
-                            else if (bytes_in_each_channel == 1) {
-                                data_in_channel = data_buffer[0];
-                            }
-                            //printf("** %i: %u %u %u %u\n", data_in_channel, (unsigned char)data_buffer[0], (unsigned char)data_buffer[1], (unsigned char)data_buffer[2], (unsigned char)data_buffer[3]);
-                            //printf("%d ", data_in_channel);
-                            if (data_in_channel < low_limit || data_in_channel > high_limit)
+                        for (int iChannel = 0 ; iChannel < header.channels ; iChannel++)
+                        {
+                            double cand = 0;
+                            if (data_buffer[bytes_in_each_channel - 1] < 128)
                             {
-                                printf("**value out of range\n");
-                                return 1;
+                                for (int iByte = bytes_in_each_channel - 1 ; iByte >= 0 ; iByte--)
+                                {
+                                    cand *= 256;
+                                    cand += data_buffer[iByte];
+                                }
                             }
-                            dsp_data->data_0[counterData0] = data_in_channel;
-                            counterData0++;
-                            dsp_data->power += data_in_channel * data_in_channel;
-
-                            // check if value was in range
-                            //printf(" | ");
+                            else
+                            {
+                                for (int iByte = bytes_in_each_channel - 1 ; iByte >= 0 ; iByte--)
+                                {
+                                    cand *= 256;
+                                    cand += (255 - data_buffer[iByte]);
+                                }
+                                cand = -cand;
+                            }
+                            printf("cand: %f -- %u %u %u %u\n", cand, data_buffer[0], data_buffer[1], data_buffer[2], data_buffer[3]);
+                            dsp_data->data_0[iChannel * num_samples + i] - cand;
                         }
-                        //printf("\n");
+                        //dsp_data->power += data_in_channel * data_in_channel;
                     }
                     else {
                         printf("Error reading file. %d bytes\n", read);
