@@ -278,19 +278,11 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
 
     if (p_useShifting)
     {
-        if (header.channels == 1)
+        if (header.channels == 2)
         {
-            for (i = 0 ; i < dsp_data->count ; i+=2)
-            {
-                dsp_data->data_0[i + 1] = dsp_data->data_0[i];
-            }
-        }
-        else if (header.channels == 2)
-        {
-            double t;
             for (i = 0 ; i < dsp_data->count ; i++)
             {
-                dsp_data->data_0[i] = (dsp_data->data_0[2 * i] + dsp_data->data_0[2 * i + 1]) / 2.;
+                dsp_data->data_0[i] = (dsp_data->data_0[dsp_data->count + i] + dsp_data->data_0[i]) / 2.;
             }
         }
     }
@@ -299,7 +291,7 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
         if (header.channels == 2)
             dsp_data->processingChannels = 2;
     }
-    printf("Total power: %g\n", dsp_data->power);
+    //printf("Total power: %g\n", dsp_data->power); <-- здесь общая мощность исходного сигнала не вычисляется (и значение переменной неопределённое)
 
     return 0;
 }
