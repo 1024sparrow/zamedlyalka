@@ -239,7 +239,7 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
                                 cand = -cand;
                             }
                             //printf("cand: %f -- %u %u %u %u\n", cand, data_buffer[0], data_buffer[1], data_buffer[2], data_buffer[3]);
-                            dsp_data->data_0[iChannel * num_samples + i] = cand;
+                            dsp_data->data_0[iChannel * num_samples + i - 1] = cand;
                         }
                     }
                     else {
@@ -368,8 +368,8 @@ int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
     {
         //fwrite();
         double valDouble = dsp_data->data_1[i];
+        int isNegative = valDouble < 0;
         for (iChannel = 0 ; iChannel < 2 ; iChannel++){ // два канала
-            int isNegative = valDouble < 0;
             unsigned int val = isNegative ? -valDouble : valDouble;
             int byteCounter = 0;
             while (val > 0){
@@ -378,8 +378,12 @@ int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
                     break;
                 }
                 dataBuffer[iChannel * bytesForSingleValue + byteCounter] = isNegative ? (255 - val % 256) : (val % 256);
+                printf("\t\t[%u] <-- %u\n", iChannel * bytesForSingleValue + byteCounter, isNegative ? (255 - val % 256) : (val % 256));
                 val /= 256;
                 byteCounter++;
+            }
+            for (int ii = byteCounter ; ii < bytesForSingleValue ; ii++){
+                dataBuffer[iChannel * bytesForSingleValue + ii] = isNegative ? 255 : 0;
             }
         }
         printf("%f: %u %u %u %u\n", valDouble, dataBuffer[0], dataBuffer[1], dataBuffer[2], dataBuffer[3]);
