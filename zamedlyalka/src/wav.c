@@ -238,8 +238,8 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
                                 }
                                 cand = -cand;
                             }
-                            printf("cand: %f -- %u %u %u %u\n", cand, data_buffer[0], data_buffer[1], data_buffer[2], data_buffer[3]);
-                            dsp_data->data_0[iChannel * num_samples + i] - cand;
+                            //printf("cand: %f -- %u %u %u %u\n", cand, data_buffer[0], data_buffer[1], data_buffer[2], data_buffer[3]);
+                            dsp_data->data_0[iChannel * num_samples + i] = cand;
                         }
                     }
                     else {
@@ -338,6 +338,7 @@ int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
     fwrite(header.data_chunk_header, sizeof(header.data_chunk_header), 1, file);
     __(header.data_size, buffer4, 4); fwrite(buffer4, sizeof(buffer4), 1, file);
 
+    /*
     long low_limit = 0l;
     long high_limit = 0l;
     switch (header.bits_per_sample) {
@@ -355,28 +356,34 @@ int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
             break;
     }
     //printf("\n\n.Valid range for data values : %ld to %ld \n", low_limit, high_limit);
-    int sizeOfEachSample = (2 * header.bits_per_sample) / 8; // два канала
-    char dataBuffer[sizeOfEachSample];
+    */
+    int sizeOfEachSample = (2 * header.bits_per_sample) / 8; // два канала, размер в байтах
+    unsigned char dataBuffer[sizeOfEachSample];
+    unsigned char bytesForSingleValue = header.bits_per_sample / 8;
 
+    printf("q234567890-8765WERTYUIOIUYTREW==========================================\n");
     size_t i;
+    unsigned char iChannel;
     for (i = 0 ; i < dsp_data->count ; i++)
     {
         //fwrite();
-        double real = dsp_data->data_1[i];
-        if (real > high_limit)
-            real = high_limit;
-        if (real < low_limit)
-            real = low_limit;
-        //unsigned long realLong = real;
-        int32_t realLong = real;//(real < 0) ? real + high_limit : real;
-        realLong = (real < 0) ? (u_int32_t)(real + 2 * ((unsigned long)high_limit + 1)) : real;
-        printf(" %u - %f: %u %u %u %u", realLong, real, (unsigned char)(realLong & 0xff), (unsigned char)(realLong & 0xff00), (unsigned char)(realLong & 0xff0000), (unsigned char)(realLong & 0xff000000));
-        //printf(" \t\t\t%u - %f: %ul %u %u %u\n", realLong, real, realLong & 0xff, realLong & 0xff00, realLong & 0xff0000, realLong & 0x8f000000);
-        printf("\n");
-        /*for (int ii = 0, cc = header.bits_per_sample / 8 ; ii < cc ; ii++)
-        {
-            char cand = realLong 
-        }*/
+        double valDouble = dsp_data->data_1[i];
+        for (iChannel = 0 ; iChannel < 2 ; iChannel++){ // два канала
+            int isNegative = valDouble < 0;
+            unsigned int val = isNegative ? -valDouble : valDouble;
+            int byteCounter = 0;
+            while (val > 0){
+                if (byteCounter >= bytesForSingleValue){
+                    printf("превышено значение (%f)", valDouble);
+                    break;
+                }
+                dataBuffer[iChannel * bytesForSingleValue + byteCounter] = isNegative ? (255 - val % 256) : (val % 256);
+                val /= 256;
+                byteCounter++;
+            }
+        }
+        printf("%f: %u %u %u %u\n", valDouble, dataBuffer[0], dataBuffer[1], dataBuffer[2], dataBuffer[3]);
+        // самое время записать содержимое dataBuffer-а в файл
     }
 
     fclose(file);

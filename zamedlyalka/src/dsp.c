@@ -393,4 +393,5 @@ int dsp_test(struct DSP_DATA *dsp_data)
     dsp_data->data_1 = malloc(sz * sizeof(double));
     memcpy(dsp_data->data_1, dsp_data->data_0, sz);
     printf("-- dsp_test --\n");
+    return 0;
 }
