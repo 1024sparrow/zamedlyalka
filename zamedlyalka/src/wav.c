@@ -388,6 +388,7 @@ int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
         }
         printf("%f: %u %u %u %u\n", valDouble, dataBuffer[0], dataBuffer[1], dataBuffer[2], dataBuffer[3]);
         // самое время записать содержимое dataBuffer-а в файл
+        fwrite(dataBuffer, sizeof(dataBuffer), 1, file);
     }
 
     fclose(file);
