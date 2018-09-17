@@ -191,6 +191,7 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
     if (header.format_type == 1) { // PCM
         dsp_data->processingChannels = 1;
         dsp_data->count = num_samples;
+        printf("dsp_data->count = %ld (%lx)\n", num_samples, num_samples);//
         dsp_data->data_0 = malloc(num_samples * header.channels * sizeof(double));
         dsp_data->discretFreq = header.sample_rate;
 
@@ -239,7 +240,8 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
                                 cand = -cand;
                             }
                             //printf("cand: %f -- %u %u %u %u\n", cand, data_buffer[0], data_buffer[1], data_buffer[2], data_buffer[3]);
-                            dsp_data->data_0[iChannel * num_samples + i - 1] = cand;
+                            //printf("data_0 insertion: %f by index %lx\n", cand, (long)(iChannel * num_samples + i - 1));
+                            dsp_data->data_0[(long)(iChannel * num_samples + i - 1)] = cand;
                         }
                     }
                     else {
@@ -397,7 +399,7 @@ int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
                 dataBuffer[iChannel * bytesForSingleValue + ii] = isNegative ? 255 : 0;
             }
         }
-        //printf("%f: %u %u %u %u\n", valDouble, dataBuffer[0], dataBuffer[1], dataBuffer[2], dataBuffer[3]);
+        //printf("%lu.\t%f: %u %u %u %u\n", i, valDouble, dataBuffer[0], dataBuffer[1], dataBuffer[2], dataBuffer[3]);
         // самое время записать содержимое dataBuffer-а в файл
         fwrite(dataBuffer, sizeof(dataBuffer), 1, file);
     }
