@@ -389,8 +389,9 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
 
 int dsp_test(struct DSP_DATA *dsp_data)
 {
-    size_t sz = dsp_data->processingChannels * dsp_data->count;
-    dsp_data->data_1 = malloc(sz * sizeof(double));
+    size_t sz = dsp_data->processingChannels * dsp_data->count * sizeof(double);
+    printf("dsp_test: bytes to copy: %lu (%lx)", sz, sz);//
+    dsp_data->data_1 = malloc(sz);
     memcpy(dsp_data->data_1, dsp_data->data_0, sz);
     printf("-- dsp_test --\n");
     return 0;
