@@ -302,15 +302,26 @@ char* seconds_to_time(float raw_seconds) {
     return hms;
 }
 
+union {
+    size_t i;
+    unsigned char c[4];
+} ___;
+
 void __(size_t from, char *to, short bytes)
 {
     if (bytes == 4)
     {
-        to[3] = from & 0xff000000;
-        to[2] = from & 0xff0000;
+        ___.i = from;
+        to[0] = ___.c[0];
+        to[1] = ___.c[1];
+        to[2] = ___.c[2];
+        to[3] = ___.c[3];
     }
-    to[1] = from & 0xff00;
-    to[0] = from & 0xff;
+    else
+    {
+        to[1] = from & 0x0000ff00;
+        to[0] = from & 0x000000ff;
+    }
 }
 int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
 {
@@ -378,7 +389,7 @@ int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
                     break;
                 }
                 dataBuffer[iChannel * bytesForSingleValue + byteCounter] = isNegative ? (255 - val % 256) : (val % 256);
-                printf("\t\t[%u] <-- %u\n", iChannel * bytesForSingleValue + byteCounter, isNegative ? (255 - val % 256) : (val % 256));
+                //printf("\t\t[%u] <-- %u\n", iChannel * bytesForSingleValue + byteCounter, isNegative ? (255 - val % 256) : (val % 256));
                 val /= 256;
                 byteCounter++;
             }
@@ -386,7 +397,7 @@ int writeWav(const char *filepath, const struct DSP_DATA *dsp_data)
                 dataBuffer[iChannel * bytesForSingleValue + ii] = isNegative ? 255 : 0;
             }
         }
-        printf("%f: %u %u %u %u\n", valDouble, dataBuffer[0], dataBuffer[1], dataBuffer[2], dataBuffer[3]);
+        //printf("%f: %u %u %u %u\n", valDouble, dataBuffer[0], dataBuffer[1], dataBuffer[2], dataBuffer[3]);
         // самое время записать содержимое dataBuffer-а в файл
         fwrite(dataBuffer, sizeof(dataBuffer), 1, file);
     }
