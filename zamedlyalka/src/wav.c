@@ -302,13 +302,13 @@ char* seconds_to_time(float raw_seconds) {
     return hms;
 }
 
-union {
-    size_t i;
-    unsigned char c[4];
-} ___;
 
 void __(size_t from, char *to, short bytes)
 {
+    union {
+        size_t i;
+        unsigned char c[4];
+    } ___;
     if (bytes == 4)
     {
         ___.i = from;
