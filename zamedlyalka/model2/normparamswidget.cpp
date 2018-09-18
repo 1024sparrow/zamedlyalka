@@ -85,4 +85,5 @@ void NormParamsWidget::mousePressEvent(QMouseEvent *event)
         return;
     if (isVisible())
         repaint();
+    emit changed();
 }

@@ -12,6 +12,7 @@ public:
 
 private:
     struct NormParams normParams;
+    struct Params params;
 };
 
 #endif // MAINWINDOW_H

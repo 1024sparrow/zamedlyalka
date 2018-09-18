@@ -3,6 +3,22 @@
 
 #include <sys/types.h>
 
+struct Params
+{
+    Params(){
+        quality = 20;
+        discretFreq = 44100;
+        tickCountPerKick = 1000;
+        freqCount = 6;
+        COUNT = 4;
+    }
+    double quality;
+    double discretFreq;
+    int tickCountPerKick;
+    int freqCount;
+    int COUNT;
+};
+
 struct FreqSet
 {
     size_t count;

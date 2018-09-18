@@ -3,12 +3,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     freqwidget.cpp \
-    normparamsmodel.cpp \
-    normparamswidget.cpp
+    normparamswidget.cpp \
+    paramstablemodel.cpp \
+    matrixwidget.cpp
 
 HEADERS += \
     mainwindow.h \
     freqwidget.h \
     types.h \
-    normparamsmodel.h \
-    normparamswidget.h
+    normparamswidget.h \
+    paramstablemodel.h \
+    matrixwidget.h
