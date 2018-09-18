@@ -1,9 +1,12 @@
 *.swp
 *.swo
 *~
+*.o
+moc_*
 *.user
 bin/
 tmp/
 .qmake.stash
 testapp/Makefile
 compiled/
+zamedlyalka/model2/Makefile
