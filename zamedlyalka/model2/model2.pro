@@ -5,7 +5,8 @@ SOURCES += \
     freqwidget.cpp \
     normparamswidget.cpp \
     paramstablemodel.cpp \
-    matrixwidget.cpp
+    matrixwidget.cpp \
+    freqdialogmodel.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -13,4 +14,5 @@ HEADERS += \
     types.h \
     normparamswidget.h \
     paramstablemodel.h \
-    matrixwidget.h
+    matrixwidget.h \
+    freqdialogmodel.h

@@ -10,12 +10,14 @@ struct Params
         discretFreq = 44100;
         tickCountPerKick = 1000;
         freqCount = 6;
-        COUNT = 4;
+        maxVal = 400;
+        COUNT = 5;
     }
     double quality;
     double discretFreq;
     int tickCountPerKick;
     int freqCount;
+    double maxVal;
     int COUNT;
 };
 

@@ -38,7 +38,7 @@ MainWindow::MainWindow()
     }
     QWidget *wBottomPanel = new QWidget(this);
     {
-        FreqWidget *freqWidget = new FreqWidget(wBottomPanel);
+        FreqWidget *freqWidget = new FreqWidget((&params), (&freqSet), wBottomPanel);
         NormParamsWidget *normParamsWidget = new NormParamsWidget((&normParams), wBottomPanel);
         QBoxLayout *lay = new QHBoxLayout(wBottomPanel);
         lay->addWidget(freqWidget);

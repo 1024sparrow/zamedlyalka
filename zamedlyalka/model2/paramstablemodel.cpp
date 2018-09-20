@@ -20,6 +20,8 @@ QVariant ParamsTableModel::data(const QModelIndex &index, int role) const
             return params->tickCountPerKick;
         else if (col == 3)
             return params->freqCount;
+        else if (col == 4)
+            return params->maxVal;
     }
     return QVariant();
 }
@@ -38,6 +40,8 @@ QVariant ParamsTableModel::headerData(int section, Qt::Orientation orientation, 
             return "Число отсчётов за раз";
         else if (section == 3)
             return "Число частот";
+        else if (section == 4)
+            return "Максимальное допустимое значение";
     }
     if (role == Qt::DisplayRole)
     {
@@ -49,6 +53,8 @@ QVariant ParamsTableModel::headerData(int section, Qt::Orientation orientation, 
             return "kick count";
         else if (section == 3)
             return "freq count";
+        else if (section == 4)
+            return "maxVal";
     }
     return QVariant();
 }

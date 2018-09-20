@@ -13,6 +13,7 @@ public:
 private:
     struct NormParams normParams;
     struct Params params;
+    struct FreqSet freqSet;
 };
 
 #endif // MAINWINDOW_H
