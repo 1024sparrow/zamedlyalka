@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QDialog>
 #include <QTableView>
+#include <QMessageBox>//
 
 FreqWidget::FreqWidget(struct Params *p_params, struct FreqSet *p_freqSet, QWidget *parent)
     :QWidget(parent), params(p_params), freqSet(p_freqSet)
@@ -28,14 +29,18 @@ void FreqWidget::paintEvent(QPaintEvent *event)
 
 void FreqWidget::onBnEditClicked()
 {
-    //FreqDialog dlg(params, freqSet, this);
-    //dlg.exec();
+    struct FreqSet freqSetCopy = {
+        freqSet->count,
+        freqSet->freq, // сами частоты мы не меняем
+        (double*)malloc(freqSet->count * sizeof(double))
+    };
+    memcpy(freqSetCopy.spectra, freqSet->spectra, freqSet->count * sizeof(double));
     QDialog dlg(this);
     {
         dlg.setMinimumSize(800,600);
         QTableView *tv = new QTableView(&dlg);
         {
-            FreqDialogModel *model = new FreqDialogModel(params, freqSet, tv);
+            FreqDialogModel *model = new FreqDialogModel(params, (&freqSetCopy), tv);
             tv->setModel(model);
         }
         QWidget *wButtons = new QWidget(&dlg);
@@ -55,4 +60,6 @@ void FreqWidget::onBnEditClicked()
     }
     if (dlg.exec() != QDialog::Accepted)
         return;
+    memcpy(freqSet->spectra, freqSetCopy.spectra, freqSet->count * sizeof(double));
+    free(freqSetCopy.spectra);
 }

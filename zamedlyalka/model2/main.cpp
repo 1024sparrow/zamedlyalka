@@ -5,8 +5,8 @@
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    MainWindow mw;
+    MainWindow *mw = new MainWindow();
     //mw.showMaximized();
-    mw.show();
+    mw->show();
     app.exec();
 }

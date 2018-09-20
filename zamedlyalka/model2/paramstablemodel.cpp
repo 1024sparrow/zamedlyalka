@@ -39,7 +39,7 @@ QVariant ParamsTableModel::headerData(int section, Qt::Orientation orientation, 
         else if (section == 2)
             return "Число отсчётов за раз";
         else if (section == 3)
-            return "Число частот";
+            return "Число частот"; // Не используется
         else if (section == 4)
             return "Максимальное допустимое значение";
     }

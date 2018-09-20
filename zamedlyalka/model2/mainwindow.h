@@ -9,6 +9,8 @@ class MainWindow : public QWidget
     Q_OBJECT
 public:
     MainWindow();
+private:
+    void initFreq();
 
 private:
     struct NormParams normParams;

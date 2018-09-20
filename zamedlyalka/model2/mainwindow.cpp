@@ -7,10 +7,14 @@
 #include <QBoxLayout>
 #include <QTableView>
 #include <QPushButton>
+#include <QDebug>
 
 MainWindow::MainWindow()
     :QWidget(0)
 {
+    qDebug()<<"12s";
+    initFreq();
+    //~~~~~~~~~~~~~~~~~~~~~~
     normParams.divideFlags = 0;
     normParams.multiplyFlags = 0;
 
@@ -48,4 +52,23 @@ MainWindow::MainWindow()
     lay->addWidget(wTopPanel);
     lay->addWidget(wMatrixes, 1);
     lay->addWidget(wBottomPanel);
+}
+
+void MainWindow::initFreq()
+{
+    freqSet.count = 6;
+    freqSet.freq = (double *)malloc(6 * sizeof(double));
+    freqSet.freq[0] = 20;
+    freqSet.freq[1] = 30;
+    freqSet.freq[2] = 40;
+    freqSet.freq[3] = 60;
+    freqSet.freq[4] = 80;
+    freqSet.freq[5] = 120;
+    freqSet.spectra = (double *)malloc(6 * sizeof(double));
+    freqSet.spectra[0] = 0;
+    freqSet.spectra[1] = 0;
+    freqSet.spectra[2] = 0;
+    freqSet.spectra[3] = 0;
+    freqSet.spectra[4] = 0;
+    freqSet.spectra[5] = 0;
 }
