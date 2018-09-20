@@ -46,7 +46,7 @@ MainWindow::MainWindow()
         NormParamsWidget *normParamsWidget = new NormParamsWidget((&normParams), wBottomPanel);
         QBoxLayout *lay = new QHBoxLayout(wBottomPanel);
         lay->addWidget(freqWidget);
-        lay->addWidget(normParamsWidget);
+        lay->addWidget(normParamsWidget, 1);
     }
     QBoxLayout *lay = new QVBoxLayout(this);
     lay->addWidget(wTopPanel);

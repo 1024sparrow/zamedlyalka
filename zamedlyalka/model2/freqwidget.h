@@ -5,16 +5,17 @@
 #include "types.h"
 
 class QLabel;
-class QPaintEvent;
+class QMouseEvent;
 class FreqWidget : public QWidget
 {
     Q_OBJECT
 public:
     FreqWidget(struct Params *p_params, struct FreqSet *p_freqSet, QWidget *parent = 0);
+    void updateForData();
 signals:
     void changed(); // changed freqSet
 protected:
-    void paintEvent(QPaintEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 private slots:
     void onBnEditClicked();
 
