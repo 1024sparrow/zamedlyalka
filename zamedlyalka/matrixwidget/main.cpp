@@ -13,16 +13,21 @@ int main(int argc, char **argv)
         md.xLabel = "Частота возбуждения";
         md.yLabel = "Собственная частота контура";
         md.count = 8;
-        md.data = malloc(md.count * md.count * sizeof(double));
-        md.comments = malloc(md.count * md.count * MATRIXDATA_COMMENT_BUF_LENGTH);
+        md.data = (double *)malloc(md.count * md.count * sizeof(double));
+        //md.comments = (char *)malloc(md.count * md.count * MATRIXDATA_COMMENT_BUF_LENGTH);
+        //md.comm = calloc(md.count * md.count, sizeof(char *));
+        size_t counter(0);
         for (size_t x = 0 ; x < md.count; ++x)
         {
             for (size_t y = 0 ; y < md.count ; ++y)
             {
                 size_t index = x * md.count + y;
-                md.data[index] =
+                md.data[index] = counter++;
+                //snprintf(md.comments + index, MATRIXDATA_COMMENT_BUF_LENGTH, "строка %l - столбец %l\n\0", y, x);
+                md.comments.append(QString("строка %1 - столбец %2").arg(y).arg(x));
             }
         }
+        md.maxVal = counter;
     }
     MatrixWidget mw((&md));
     mw.show();

@@ -1,9 +1,11 @@
 #ifndef MATRIX_DATA_H
 #define MATRIX_DATA_H
 
+#include <QStringList>
+
 #define MATRIXDATA_COMMENT_BUF_LENGTH 512
 
-// Квадратная матрица
+// Квадратная матрица неотрицательный значений
 //data и comments: заполнение по столбцам
 struct MatrixData
 {
@@ -11,7 +13,10 @@ struct MatrixData
     char *yLabel;
     size_t count;
     double *data;
-    char *comments;
+    //char *comments;
+    QStringList comments;
+    //char **comm;
+    double maxVal;
 };
 
 #endif // MATRIX_DATA_H
