@@ -12,6 +12,7 @@ public:
     MainWindow();
 private:
     void initFreq();
+    void initMatrixes();
 
 private:
     struct NormParams normParams;

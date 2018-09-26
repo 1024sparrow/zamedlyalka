@@ -6,7 +6,7 @@
 FreqDialogModel::FreqDialogModel(struct Params *p_params, struct FreqSet *p_freqSet, QObject *parent)
     :QAbstractTableModel(parent), params(p_params), freqSet(p_freqSet)
 {
-    qDebug()<<"12";
+//    qDebug()<<"12";
 }
 
 int FreqDialogModel::rowCount(const QModelIndex &parent) const

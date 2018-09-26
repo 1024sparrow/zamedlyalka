@@ -41,7 +41,7 @@ void MatrixWidget::update()
         }
     }
     size_t counter = 0;
-    int itemSize = width() / md->count;
+    int itemSize = qMin(width(), height()) / md->count;
     if (itemSize > 0)
     {
         for (size_t iX = 0 ; iX < md->count ; ++iX)
@@ -60,9 +60,10 @@ void MatrixWidget::update()
 void MatrixWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
+    painter.setBrush(Qt::Dense7Pattern);
     painter.drawRect(0,0,width() - 1, height() - 1);
-    painter.drawLine(0,0,width(), height());
-    painter.drawLine(0,height(), width(), 0);
+    //painter.drawLine(0,0,width(), height());
+    //painter.drawLine(0,height(), width(), 0);
 }
 
 void MatrixWidget::resizeEvent(QResizeEvent *event)

@@ -14,6 +14,7 @@ MainWindow::MainWindow()
 {
     qDebug()<<"12s";
     initFreq();
+    initMatrixes();
     //~~~~~~~~~~~~~~~~~~~~~~
     normParams.divideFlags = 0;
     normParams.multiplyFlags = 0;
@@ -71,4 +72,29 @@ void MainWindow::initFreq()
     freqSet.spectra[3] = 0;
     freqSet.spectra[4] = 0;
     freqSet.spectra[5] = 0;
+}
+
+void MainWindow::initMatrixes()
+{
+    size_t co = params.freqCount;
+
+    leftMatrix.count = co;
+    leftMatrix.data = new double[co * co];
+    for (size_t i = 0, c = co * co ; i < c ; ++i)
+    {
+        leftMatrix.data[i] = i;
+        leftMatrix.comments.append(QString());
+    }
+    leftMatrix.xLabel = "x";
+    leftMatrix.yLabel = "y";
+
+    rightMatrix.count = co;
+    rightMatrix.data = new double[co * co];
+    for (size_t i = 0, c = co * co ; i < c ; ++i)
+    {
+        rightMatrix.data[i] = i;
+        rightMatrix.comments.append(QString());
+    }
+    rightMatrix.xLabel = "x";
+    rightMatrix.yLabel = "y";
 }
