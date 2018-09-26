@@ -34,8 +34,8 @@ MainWindow::MainWindow()
     }
     QWidget *wMatrixes = new QWidget(this);
     {
-        MatrixWidget *wMatrixLeft = new MatrixWidget(wMatrixes);
-        MatrixWidget *wMatrixRight = new MatrixWidget(wMatrixes);
+        MatrixWidget *wMatrixLeft = new MatrixWidget((&leftMatrix), wMatrixes);
+        MatrixWidget *wMatrixRight = new MatrixWidget((&rightMatrix), wMatrixes);
         QBoxLayout *lay = new QHBoxLayout(wMatrixes);
         lay->addWidget(wMatrixLeft);
         lay->addWidget(wMatrixRight);

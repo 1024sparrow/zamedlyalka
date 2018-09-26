@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "types.h"
+#include "matrix_data.h"
 
 class MainWindow : public QWidget
 {
@@ -16,6 +17,7 @@ private:
     struct NormParams normParams;
     struct Params params;
     struct FreqSet freqSet;
+    struct MatrixData leftMatrix, rightMatrix;
 };
 
 #endif // MAINWINDOW_H
