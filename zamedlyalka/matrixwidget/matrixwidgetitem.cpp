@@ -1,6 +1,8 @@
 #include "matrixwidgetitem.h"
 
 #include <QPainter>
+#include <QStringList>
+#include <QString>
 #include <qmath.h>
 
 MatrixWidgetItem::MatrixWidgetItem(int *p_displayMode, size_t p_x, size_t p_y, MatrixData *p_matrixData, QWidget *parent)
@@ -21,7 +23,16 @@ void MatrixWidgetItem::update()
     //if (strncmp((const char *)tooltipPrev, (const char *)matrixData->comments[index], MATRIXDATA_COMMENT_BUF_LENGTH) == 0)
     {
         //setToolTip("asdfsdf");
-        setToolTip(matrixData->comments[index]);
+        QString tooltipText = QString("x: %1\ny: %2\nvalue: %3")
+                .arg(matrixData->xLabel)
+                .arg(matrixData->yLabel)
+                .arg(matrixData->data[index]);
+        if (!matrixData->comments[index].isEmpty())
+        {
+            tooltipText.append("\n==========\n");
+            tooltipText.append(matrixData->comments[index]);
+        }
+        setToolTip(tooltipText);
         //strncpy(tooltipPrev, matrixData->comments + index, 2);//MATRIXDATA_COMMENT_BUF_LENGTH);
         //strncpy(tooltipPrev, (const char *)matrixData->comments[index], 2);//MATRIXDATA_COMMENT_BUF_LENGTH);
 
@@ -59,6 +70,10 @@ void MatrixWidgetItem::update()
 void MatrixWidgetItem::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
+    if (matrixData->maxVal == 0)
+    {
+        return;
+    }
     //painter.fillRect(rect(), QColor(qrand() % 256, qrand() % 256, qrand() % 256));
     int valueNormed = matrixData->data[index] * 256 / matrixData->maxVal;
     QColor color(255,255,170); // #ffa

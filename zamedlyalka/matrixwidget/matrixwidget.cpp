@@ -1,6 +1,7 @@
 #include "matrixwidget.h"
 #include "matrixwidgetitem.h"
 
+#include <QPainter>
 #include <QMessageBox>//
 
 MatrixWidget::MatrixWidget(MatrixData *p_md, QWidget *parent)
@@ -12,6 +13,12 @@ MatrixWidget::MatrixWidget(MatrixData *p_md, QWidget *parent)
 
 void MatrixWidget::update()
 {
+    md->maxVal = 0;
+    for (size_t i = 0, c = md->count * md->count ; i < c ; ++i)
+    {
+        if (md->data[i] > md->maxVal)
+            md->maxVal = md->data[i];
+    }
     if (matrixSizePrev != md->count)
     {
         if (!wwItems.isEmpty())
@@ -48,6 +55,14 @@ void MatrixWidget::update()
             }
         }
     }
+}
+
+void MatrixWidget::paintEvent(QPaintEvent *event)
+{
+    QPainter painter(this);
+    painter.drawRect(0,0,width() - 1, height() - 1);
+    painter.drawLine(0,0,width(), height());
+    painter.drawLine(0,height(), width(), 0);
 }
 
 void MatrixWidget::resizeEvent(QResizeEvent *event)

@@ -5,7 +5,9 @@
 #include <QList>
 #include "matrix_data.h"
 
+class QPaintEvent;
 class QResizeEvent;
+class QMouseEvent;
 
 class MatrixWidgetItem;
 
@@ -17,6 +19,7 @@ public:
     MatrixWidget(struct MatrixData *p_md, QWidget *parent = 0);
     void update();
 protected:
+    void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent *event);
     void mousePressEvent(QMouseEvent *event);
 
