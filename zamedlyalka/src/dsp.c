@@ -43,6 +43,15 @@ int process_signal(struct DSP_DATA *dsp_data, double p_startFreq, double p_endFr
     double e, w; // ЭДС вынуждения и собств. частота контура соответвенно
     int periodCount;
 
+
+//{{
+    double *sinus = sinus_gen(0, dsp_data->count, 800, dsp_data->discretFreq, 0);
+    for (i = 0 ; i < dsp_data->count ; i++)
+    {
+        printf("--- %lu %f\n", i, sinus[i]);
+    }
+//}}
+
     //{{ test
     //
     /*{

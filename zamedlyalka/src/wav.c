@@ -240,7 +240,7 @@ int readWav(const char *p_filepath, struct DSP_DATA *dsp_data, int p_useShifting
                                 cand = -cand;
                             }
                             //printf("cand: %f -- %u %u %u %u\n", cand, data_buffer[0], data_buffer[1], data_buffer[2], data_buffer[3]);
-                            //printf("data_0 insertion: %f by index %lx\n", cand, (long)(iChannel * num_samples + i - 1));
+                            printf("data_0 insertion: %f by index %lx (%lu)\n", cand, (long)(iChannel * num_samples + i - 1), (long)(iChannel * num_samples + i - 1));
                             dsp_data->data_0[(long)(iChannel * num_samples + i - 1)] = cand;
                         }
                     }
